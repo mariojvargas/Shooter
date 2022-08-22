@@ -154,6 +154,11 @@ void AShooterCharacter::FireWeapon()
 		{
 			DrawDebugLine(GetWorld(), LineTraceStart, LineTraceEnd, FColor::Red, false, 2.f);
 			DrawDebugPoint(GetWorld(), FireHit.Location, 5, FColor::Blue, false, 2.f);
+
+			if (ImpactParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, FireHit.Location);
+			}
 		}
 	}
 
