@@ -68,8 +68,13 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	float BaseLookUpRate;
 
+	/** Gunshot sound cue */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	class USoundCue* FireSound{ nullptr };
+
+	/** Firing flash spawned at BarrelSocket of character skeletal mesh */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	class UParticleSystem* MuzzleFlash{ nullptr };
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
