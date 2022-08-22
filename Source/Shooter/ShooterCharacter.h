@@ -15,9 +15,31 @@ public:
 	// Sets default values for this character's properties
 	AShooterCharacter();
 
+private:
+	const float DEFAULT_BASE_TURN_RATE = 45.f;
+	const float DEFAULT_BASE_LOOK_UP_RATE = 45.f;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	/** Moves character forwards or backwards */
+	void MoveForward(float Value);
+
+	/** Moves character to the right or left */
+	void MoveRight(float Value);
+
+	/** 
+	 * Called via input to turn character at a given rate.
+	 * @param Rate	Normalized rate (i.e. 1.0 means 100% of desired turn rate).
+	*/
+	void TurnAtRate(float Rate);
+
+	/**
+	 * Called via input to look up or down at a given rate.
+	 * @param Rate	Normalized rate (i.e. 1.0 means 100% of desired rate).
+	 */
+	void LookUpAtRate(float Rate);
 
 public:	
 	// Called every frame
@@ -32,6 +54,14 @@ private:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera{ nullptr };
+
+	/** Base turn rate in degrees per second. Other scaling may affect final turn rate */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float BaseTurnRate;
+
+	/** Base look-up/down rate in degrees per second. Other scaling may affect final turn rate */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
+	float BaseLookUpRate; 
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
