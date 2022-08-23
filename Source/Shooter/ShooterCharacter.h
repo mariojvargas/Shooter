@@ -121,4 +121,9 @@ public:
 	{ 
 		return FollowCamera; 
 	}
+
+	FORCEINLINE bool IsAiming() const
+	{
+		return bAiming;
+	}
 };
