@@ -18,6 +18,9 @@ public:
 private:
 	const float DEFAULT_BASE_TURN_RATE = 45.f;
 	const float DEFAULT_BASE_LOOK_UP_RATE = 45.f;
+	const float AIMING_ZOOM_FOV = 35.f;
+	const float CAMERA_BOOM_ARM_LENGTH = 180.f;
+	const float CAMERA_ZOOM_INTERPOLATION_SPEED = 20.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -47,6 +50,12 @@ protected:
 	void FireWeapon();
 
 	bool GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamEndLocation);
+
+	void AimingButtonPressed();
+
+	void AimingButtonReleased();
+
+	void InterpolateAimCameraZoom(float DeltaTime);
 
 public:	
 	// Called every frame
@@ -89,6 +98,18 @@ private:
 	/** Montage for firing the weapon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	class UAnimMontage* HipFireMontage{ nullptr };
+
+	UPROPERTY(VisibleAnywhere, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	bool bAiming;
+
+	float CameraDefaultFieldOfView;
+
+	float CameraZoomedFieldOfView;
+
+	float CameraCurrentFieldOfView;
+
+	UPROPERTY(EditAnywhere, Category = "Combat", meta = (AllowPrivateAccess = "true"))
+	float ZoomInterpolationSpeed;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 

@@ -14,7 +14,12 @@
 // Sets default values
 AShooterCharacter::AShooterCharacter() : 
 	BaseTurnRate(DEFAULT_BASE_TURN_RATE),
-	BaseLookUpRate(DEFAULT_BASE_LOOK_UP_RATE)
+	BaseLookUpRate(DEFAULT_BASE_LOOK_UP_RATE),
+	bAiming(false),
+	CameraDefaultFieldOfView(0.f),
+	CameraZoomedFieldOfView(AIMING_ZOOM_FOV),
+	CameraCurrentFieldOfView(0.f),
+	ZoomInterpolationSpeed(CAMERA_ZOOM_INTERPOLATION_SPEED)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -22,9 +27,9 @@ AShooterCharacter::AShooterCharacter() :
 	// Create camera spring arm, which pulls in towards character if there is a collision 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("Camera Boom"));
 	CameraBoom->SetupAttachment(RootComponent);
-	CameraBoom->TargetArmLength = 300.f;	// Follow character at this distance
+	CameraBoom->TargetArmLength = CAMERA_BOOM_ARM_LENGTH;	// Follow character at this distance
 	CameraBoom->bUsePawnControlRotation = true;	// Rotate the spring arm based on the character controller
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 50.f);
+	CameraBoom->SocketOffset = FVector(0.f, 50.f, 70.f);
 
 	// Create follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Follow Camera"));
@@ -50,7 +55,11 @@ void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	
+	if (FollowCamera)
+	{
+		CameraDefaultFieldOfView = GetFollowCamera()->FieldOfView;
+		CameraCurrentFieldOfView = CameraDefaultFieldOfView;
+	}
 }
 
 void AShooterCharacter::MoveForward(float Value)
@@ -92,6 +101,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	InterpolateAimCameraZoom(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -117,6 +127,9 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::FireWeapon);
+
+	PlayerInputComponent->BindAction("AimingButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
+	PlayerInputComponent->BindAction("AimingButton", EInputEvent::IE_Released, this, &AShooterCharacter::AimingButtonReleased);
 }
 
 void AShooterCharacter::TurnAtRate(float Rate)
@@ -243,4 +256,36 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 	}
 
 	return bScreenToWorldSuccess;
+}
+
+void AShooterCharacter::AimingButtonPressed()
+{
+	bAiming = true;
+}
+
+void AShooterCharacter::AimingButtonReleased()
+{
+	bAiming = false;
+}
+
+void AShooterCharacter::InterpolateAimCameraZoom(float DeltaTime)
+{
+	if (bAiming)
+	{
+		CameraCurrentFieldOfView = FMath::FInterpTo(
+			CameraCurrentFieldOfView, 
+			CameraZoomedFieldOfView, 
+			DeltaTime, 
+			ZoomInterpolationSpeed);
+	}
+	else
+	{
+		CameraCurrentFieldOfView = FMath::FInterpTo(
+			CameraCurrentFieldOfView, 
+			CameraDefaultFieldOfView, 
+			DeltaTime, 
+			ZoomInterpolationSpeed);
+	}
+
+	GetFollowCamera()->SetFieldOfView(CameraCurrentFieldOfView);
 }
