@@ -34,8 +34,9 @@ AShooterCharacter::AShooterCharacter() :
 	// Don't rotate when the controller rotates
 	// because Controller should only affect camera
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
+	// we should rotate along with the controller
+	bUseControllerRotationYaw = true;
 
 	// Configure character movement
 	GetCharacterMovement()->bOrientRotationToMovement = false;	// true => character moves in the direction of input
