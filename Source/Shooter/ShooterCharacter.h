@@ -66,6 +66,11 @@ protected:
 
 	void CalculateCrosshairSpread(float DeltaTime);
 
+	void BeginCrosshairBulletFire();
+
+	UFUNCTION()
+	void EndCrosshairBulletFire();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -171,6 +176,10 @@ private:
 	/** Shooting component for crosshair spread */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
+
+	float ShootTimeDurationSeconds;
+	bool bFiringBullet;
+	FTimerHandle CrosshairShootTimer;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 

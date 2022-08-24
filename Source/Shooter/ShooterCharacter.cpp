@@ -41,7 +41,11 @@ AShooterCharacter::AShooterCharacter() :
 	CrosshairVelocityFactor(0.f),
 	CrosshairInAirFactor(0.f),
 	CrosshairAimFactor(0.f),
-	CrosshairShootingFactor(0.f)
+	CrosshairShootingFactor(0.f),
+
+	// Bullet fire timer
+	ShootTimeDurationSeconds(0.05f),
+	bFiringBullet(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -268,6 +272,8 @@ void AShooterCharacter::FireWeapon()
 		AnimInstance->Montage_Play(HipFireMontage);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
+
+	BeginCrosshairBulletFire();
 }
 
 bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamEndLocation)
@@ -281,7 +287,6 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 
 	// Get screen space location of crosshair
 	FVector2D CrosshairLocation(ViewportSize.X / 2.f, ViewportSize.Y / 2.f);
-	CrosshairLocation.Y -= 50.f;
 
 	// Get world position and direction of crosshair
 	FVector CrosshairWorldPosition;
@@ -393,13 +398,47 @@ void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
 			30.f);
 	}
 
+	if (bFiringBullet)
+	{
+		CrosshairShootingFactor = FMath::FInterpTo(
+			CrosshairShootingFactor,
+			0.3f,
+			DeltaTime,
+			60.f);
+	}
+	else
+	{
+		CrosshairShootingFactor = FMath::FInterpTo(
+			CrosshairShootingFactor,
+			0.f,
+			DeltaTime,
+			60.f);
+	}
+
 	CrosshairSpreadMultiplier = 0.5f 
 		+ CrosshairVelocityFactor 
 		+ CrosshairInAirFactor
+		+ CrosshairShootingFactor
 		- CrosshairAimFactor;
 }
 
 float AShooterCharacter::GetCrosshairSpreadMultiplier() const
 {
 	return CrosshairSpreadMultiplier;
+}
+
+void AShooterCharacter::BeginCrosshairBulletFire()
+{
+	bFiringBullet = true;
+
+	GetWorldTimerManager().SetTimer(
+		CrosshairShootTimer, 
+		this, 
+		&AShooterCharacter::EndCrosshairBulletFire, 
+		ShootTimeDurationSeconds);
+}
+
+void AShooterCharacter::EndCrosshairBulletFire()
+{
+	bFiringBullet = false;
 }
