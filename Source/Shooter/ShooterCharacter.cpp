@@ -45,7 +45,14 @@ AShooterCharacter::AShooterCharacter() :
 
 	// Bullet fire timer
 	ShootTimeDurationSeconds(0.05f),
-	bFiringBullet(false)
+	bFiringBullet(false),
+
+	// Automatic gunfire configuration
+	// NOTE: Fire rate must be higher than crosshair 
+	//       interpolation speed (ShootTimeDurationSeconds)
+	bFireButtonPressed(false),
+	AutomaticFireRate(0.1f),
+	bShouldFire(true)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -190,7 +197,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::FireButtonPressed);
+	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Released, this, &AShooterCharacter::FireButtonReleased);
 
 	PlayerInputComponent->BindAction("AimingButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", EInputEvent::IE_Released, this, &AShooterCharacter::AimingButtonReleased);
@@ -441,4 +449,41 @@ void AShooterCharacter::BeginCrosshairBulletFire()
 void AShooterCharacter::EndCrosshairBulletFire()
 {
 	bFiringBullet = false;
+}
+
+void AShooterCharacter::FireButtonPressed()
+{
+	bFireButtonPressed = true;
+	StartFireTimer();
+}
+
+void AShooterCharacter::FireButtonReleased()
+{
+	bFireButtonPressed = false;
+}
+
+void AShooterCharacter::StartFireTimer()
+{
+	if (bShouldFire)
+	{
+		FireWeapon();
+		bShouldFire = false;
+
+		GetWorldTimerManager().SetTimer(
+			AutoFireTimer,
+			this,
+			&AShooterCharacter::ResetAutoFire,
+			AutomaticFireRate
+		);
+	}
+}
+
+void AShooterCharacter::ResetAutoFire()
+{
+	bShouldFire = true;
+
+	if (bFireButtonPressed)
+	{
+		StartFireTimer();
+	}
 }
