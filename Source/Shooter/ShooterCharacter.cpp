@@ -15,7 +15,21 @@
 AShooterCharacter::AShooterCharacter() : 
 	BaseTurnRate(DEFAULT_BASE_TURN_RATE),
 	BaseLookUpRate(DEFAULT_BASE_LOOK_UP_RATE),
+	
+	// Turn rates when aiming or not aiming
+	HipTurnRate(90.f),
+	HipLookUpRate(90.f),
+	AimingTurnRate(20.f),
+	AimingLookUpRate(20.f),
+	
+	// Mouse sensitivity scale factors
+	MouseHipTurnRate(1.f),
+	MouseHipLookUpRate(1.f),
+	MouseAimingTurnRate(0.35f),
+	MouseAimingLookUpRate(0.35f),
+
 	bAiming(false),
+	
 	CameraDefaultFieldOfView(0.f),
 	CameraZoomedFieldOfView(AIMING_ZOOM_FOV),
 	CameraCurrentFieldOfView(0.f),
@@ -62,6 +76,53 @@ void AShooterCharacter::BeginPlay()
 	}
 }
 
+// Called every frame
+void AShooterCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	InterpolateAimCameraZoom(DeltaTime);
+
+	RefreshAimingOrHipLookRates();
+}
+
+
+void AShooterCharacter::InterpolateAimCameraZoom(float DeltaTime)
+{
+	if (IsAiming())
+	{
+		CameraCurrentFieldOfView = FMath::FInterpTo(
+			CameraCurrentFieldOfView, 
+			CameraZoomedFieldOfView, 
+			DeltaTime, 
+			ZoomInterpolationSpeed);
+	}
+	else
+	{
+		CameraCurrentFieldOfView = FMath::FInterpTo(
+			CameraCurrentFieldOfView, 
+			CameraDefaultFieldOfView, 
+			DeltaTime, 
+			ZoomInterpolationSpeed);
+	}
+
+	GetFollowCamera()->SetFieldOfView(CameraCurrentFieldOfView);
+}
+
+void AShooterCharacter::RefreshAimingOrHipLookRates()
+{
+	if (IsAiming())
+	{
+		BaseTurnRate = AimingTurnRate;
+		BaseLookUpRate = AimingLookUpRate;
+	}
+	else
+	{
+		BaseTurnRate = HipTurnRate;
+		BaseLookUpRate = HipLookUpRate;
+	}
+}
+
 void AShooterCharacter::MoveForward(float Value)
 {
 	if (Controller == nullptr || Value == 0)
@@ -96,14 +157,6 @@ void AShooterCharacter::MoveRight(float Value)
 	AddMovementInput(Direction, Value);
 }
 
-// Called every frame
-void AShooterCharacter::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-	InterpolateAimCameraZoom(DeltaTime);
-}
-
 // Called to bind functionality to input
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -117,11 +170,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("TurnRate", this, &AShooterCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AShooterCharacter::LookUpAtRate);
 
-	// Bind character turn to Mouse horizontal direction
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-
-	// Bind character look up/down to Mouse vertical direction
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("Turn", this, &AShooterCharacter::TurnWithMouse);
+	PlayerInputComponent->BindAxis("LookUp", this, &AShooterCharacter::LookUpWithMouse);
 
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
@@ -130,6 +180,20 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("AimingButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::AimingButtonPressed);
 	PlayerInputComponent->BindAction("AimingButton", EInputEvent::IE_Released, this, &AShooterCharacter::AimingButtonReleased);
+}
+
+void AShooterCharacter::TurnWithMouse(float Value)
+{
+	const float MouseTurnSensitivity = IsAiming() ? MouseAimingTurnRate : MouseHipTurnRate;
+
+	AddControllerYawInput(Value * MouseTurnSensitivity);
+}
+
+void AShooterCharacter::LookUpWithMouse(float Value)
+{
+	const float MouseLookUpSensitivity = IsAiming() ? MouseAimingLookUpRate : MouseHipLookUpRate;
+	
+	AddControllerPitchInput(Value * MouseLookUpSensitivity);
 }
 
 void AShooterCharacter::TurnAtRate(float Rate)
@@ -266,26 +330,4 @@ void AShooterCharacter::AimingButtonPressed()
 void AShooterCharacter::AimingButtonReleased()
 {
 	bAiming = false;
-}
-
-void AShooterCharacter::InterpolateAimCameraZoom(float DeltaTime)
-{
-	if (bAiming)
-	{
-		CameraCurrentFieldOfView = FMath::FInterpTo(
-			CameraCurrentFieldOfView, 
-			CameraZoomedFieldOfView, 
-			DeltaTime, 
-			ZoomInterpolationSpeed);
-	}
-	else
-	{
-		CameraCurrentFieldOfView = FMath::FInterpTo(
-			CameraCurrentFieldOfView, 
-			CameraDefaultFieldOfView, 
-			DeltaTime, 
-			ZoomInterpolationSpeed);
-	}
-
-	GetFollowCamera()->SetFieldOfView(CameraCurrentFieldOfView);
 }
