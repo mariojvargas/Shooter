@@ -52,9 +52,12 @@ AShooterCharacter::AShooterCharacter() :
 	// Automatic gunfire configuration
 	// NOTE: Fire rate must be higher than crosshair 
 	//       interpolation speed (ShootTimeDurationSeconds)
+	bShouldFire(true),
 	bFireButtonPressed(false),
 	AutomaticFireRate(0.1f),
-	bShouldFire(true)
+
+	// Item tracing
+	bShouldTraceForOverlappingItems(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -108,16 +111,7 @@ void AShooterCharacter::Tick(float DeltaTime)
 
 	CalculateCrosshairSpread(DeltaTime);
 
-	FHitResult ItemTraceResult;
-	FVector IgnoredTraceEndOrHitLocation;
-	if (TryGetTraceUnderCrosshairs(ItemTraceResult, IgnoredTraceEndOrHitLocation))
-	{
-		AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-		if (HitItem && HitItem->GetPickupWidget())
-		{
-			HitItem->GetPickupWidget()->SetVisibility(true);
-		}
-	}
+	TraceForOverlappingItems();
 }
 
 
@@ -513,4 +507,40 @@ bool AShooterCharacter::TryGetTraceUnderCrosshairs(FHitResult& OutHitResult, FVe
 	}
 
 	return false;
+}
+
+void AShooterCharacter::AddOverlappedItemCount(int32 Amount)
+{
+	// TODO: probably should extract bShouldTraceForItems from here but copied as is from course
+	if (OverlappedItemCount + Amount <= 0)
+	{
+		OverlappedItemCount = 0;
+		bShouldTraceForOverlappingItems = false;
+	}
+	else
+	{
+		OverlappedItemCount += Amount;
+		bShouldTraceForOverlappingItems = true;
+	}
+}
+
+void AShooterCharacter::TraceForOverlappingItems()
+{
+	if (!bShouldTraceForOverlappingItems)
+	{
+		return;
+	}
+
+	FHitResult ItemTraceResult;
+	FVector IgnoredTraceEndOrHitLocation;
+	if (!TryGetTraceUnderCrosshairs(ItemTraceResult, IgnoredTraceEndOrHitLocation))
+	{
+		return;
+	}
+
+	AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
+	if (HitItem && HitItem->GetPickupWidget())
+	{
+		HitItem->GetPickupWidget()->SetVisibility(true);
+	}
 }
