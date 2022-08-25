@@ -528,6 +528,12 @@ void AShooterCharacter::TraceForOverlappingItems()
 {
 	if (!bShouldTraceForOverlappingItems)
 	{
+		if (LastTracedPickupItem)
+		{
+			LastTracedPickupItem->GetPickupWidget()->SetVisibility(false);
+			LastTracedPickupItem = nullptr;
+		}
+
 		return;
 	}
 
@@ -543,4 +549,11 @@ void AShooterCharacter::TraceForOverlappingItems()
 	{
 		HitItem->GetPickupWidget()->SetVisibility(true);
 	}
+
+	if (LastTracedPickupItem && LastTracedPickupItem != HitItem)
+	{
+		LastTracedPickupItem->GetPickupWidget()->SetVisibility(false);
+	}
+
+	LastTracedPickupItem = HitItem;
 }

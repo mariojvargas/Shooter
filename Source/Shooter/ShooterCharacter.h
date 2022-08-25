@@ -211,6 +211,10 @@ private:
 
 	int32 OverlappedItemCount;	// Can be int8
 
+	/** The last AItem traced in most recent frame */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	class AItem* LastTracedPickupItem{ nullptr };
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
 	{ 
