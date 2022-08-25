@@ -136,3 +136,15 @@ void AItem::SetActiveStars()
 	}
 }
 
+void AItem::DisableInteractions()
+{
+	if (AreaSphere)
+	{
+		AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	}
+
+	if (CollisionBox)
+	{
+		CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+	}
+}

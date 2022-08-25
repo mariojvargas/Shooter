@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "ShooterCharacter.generated.h"
 
+class AWeapon;
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -85,7 +87,9 @@ protected:
 
 	void TraceForOverlappingItems();
 
-	void SpawnDefaultWeapon();
+	AWeapon* SpawnDefaultWeapon();
+
+	void EquipWeapon(class AWeapon* WeaponToEquip);
 
 public:	
 	// Called every frame
@@ -218,7 +222,7 @@ private:
 	class AItem* LastTracedPickupItem{ nullptr };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
-	class AWeapon* EquippedWeapon{ nullptr };
+	AWeapon* EquippedWeapon{ nullptr };
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	TSubclassOf<AWeapon> DefaultWeaponClass;

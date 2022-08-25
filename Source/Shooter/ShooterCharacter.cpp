@@ -100,7 +100,7 @@ void AShooterCharacter::BeginPlay()
 		CameraCurrentFieldOfView = CameraDefaultFieldOfView;
 	}
 
-	SpawnDefaultWeapon();
+	EquipWeapon(SpawnDefaultWeapon());
 }
 
 // Called every frame
@@ -547,6 +547,7 @@ void AShooterCharacter::TraceForOverlappingItems()
 		return;
 	}
 
+	// TODO: Refactor into maybe HitItem->ShowStatsHud()/HideStatsHud() 
 	AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
 	if (HitItem && HitItem->GetPickupWidget())
 	{
@@ -561,18 +562,30 @@ void AShooterCharacter::TraceForOverlappingItems()
 	LastTracedPickupItem = HitItem;
 }
 
-void AShooterCharacter::SpawnDefaultWeapon()
+AWeapon* AShooterCharacter::SpawnDefaultWeapon()
 {
 	if (DefaultWeaponClass)
 	{
-		AWeapon* DefaultWeapon = GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
-		
-		const USkeletalMeshSocket* RightHandSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
-		if (RightHandSocket)
-		{
-			RightHandSocket->AttachActor(DefaultWeapon, GetMesh());
-		}
-
-		EquippedWeapon = DefaultWeapon;
+		return GetWorld()->SpawnActor<AWeapon>(DefaultWeaponClass);
 	}
+
+	return nullptr;
+}
+
+void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
+{
+	if (!WeaponToEquip)
+	{
+		return;
+	}
+
+	const USkeletalMeshSocket* HandWeaponSocket = GetMesh()->GetSocketByName(FName("RightHandSocket"));
+	if (HandWeaponSocket)
+	{
+		HandWeaponSocket->AttachActor(WeaponToEquip, GetMesh());
+	}
+
+	EquippedWeapon = WeaponToEquip;
+
+	EquippedWeapon->DisableInteractions();
 }

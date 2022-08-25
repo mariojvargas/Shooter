@@ -55,6 +55,9 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/** Disables all user interactivity */
+	void DisableInteractions();
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USkeletalMeshComponent* ItemMesh{ nullptr };
