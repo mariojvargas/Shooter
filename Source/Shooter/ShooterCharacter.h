@@ -81,7 +81,7 @@ protected:
 	UFUNCTION()
 	void ResetAutoFire();
 
-	bool TryGetTraceUnderCrosshairs(FHitResult& OutHitResult);
+	bool TryGetTraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutTraceEndOrHitLocation);
 
 public:	
 	// Called every frame
