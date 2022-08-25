@@ -41,16 +41,16 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
         bAiming = ShooterCharacter->IsAiming();
 
-        if (GEngine)
-        {
-            FString RotationMessage = FString::Printf(TEXT("Base Aim Rotation: %f"), AimRotation.Yaw);
-            GEngine->AddOnScreenDebugMessage(1, 0, FColor::White, RotationMessage);
+        // if (GEngine)
+        // {
+        //     FString RotationMessage = FString::Printf(TEXT("Base Aim Rotation: %f"), AimRotation.Yaw);
+        //     GEngine->AddOnScreenDebugMessage(1, 0, FColor::White, RotationMessage);
 
-            FString MovementRotationMessage = FString::Printf(TEXT("Movement Rotation: %f"), MovementRotation.Yaw);
-            GEngine->AddOnScreenDebugMessage(2, 0, FColor::Green, MovementRotationMessage);
+        //     FString MovementRotationMessage = FString::Printf(TEXT("Movement Rotation: %f"), MovementRotation.Yaw);
+        //     GEngine->AddOnScreenDebugMessage(2, 0, FColor::Green, MovementRotationMessage);
 
-            FString OffsetMessage = FString::Printf(TEXT("Movement Offset Yaw: %f"), MovementOffsetYaw);
-            GEngine->AddOnScreenDebugMessage(3, 0, FColor::Cyan, OffsetMessage);
-        }
+        //     FString OffsetMessage = FString::Printf(TEXT("Movement Offset Yaw: %f"), MovementOffsetYaw);
+        //     GEngine->AddOnScreenDebugMessage(3, 0, FColor::Cyan, OffsetMessage);
+        // }
     }
 }

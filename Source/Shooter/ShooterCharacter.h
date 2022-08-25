@@ -21,6 +21,7 @@ private:
 	const float AIMING_ZOOM_FOV = 35.f;
 	const float CAMERA_BOOM_ARM_LENGTH = 180.f;
 	const float CAMERA_ZOOM_INTERPOLATION_SPEED = 20.f;
+	const float MAX_LINE_TRACE_DISTANCE = 50000.f;
 
 protected:
 	// Called when the game starts or when spawned
@@ -79,6 +80,8 @@ protected:
 
 	UFUNCTION()
 	void ResetAutoFire();
+
+	bool TryGetTraceUnderCrosshairs(FHitResult& OutHitResult);
 
 public:	
 	// Called every frame
