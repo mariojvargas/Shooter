@@ -155,6 +155,7 @@ void AItem::SetItemProperties(EItemState State)
 			ItemMesh->SetVisibility(true);
 			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ItemMesh->SetEnableGravity(false);
 
 			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Overlap);
 			AreaSphere->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -169,6 +170,21 @@ void AItem::SetItemProperties(EItemState State)
 			ItemMesh->SetVisibility(true);
 			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ItemMesh->SetEnableGravity(false);
+
+			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			break;
+
+		case EItemState::EIS_Falling:
+			ItemMesh->SetSimulatePhysics(true);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
+			ItemMesh->SetEnableGravity(true);
 
 			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
