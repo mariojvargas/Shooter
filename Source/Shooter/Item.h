@@ -132,8 +132,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	class AShooterCharacter* Character;
 
-	float ItemInterpX;
-	float ItemInterpY;
+	/** Initial Yaw offset between the camera and the interping item */
+	float InterpInitialYawOffset;
 
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const 

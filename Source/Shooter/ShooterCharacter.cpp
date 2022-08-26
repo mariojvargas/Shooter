@@ -53,8 +53,8 @@ AShooterCharacter::AShooterCharacter() :
 	// Automatic gunfire configuration
 	// NOTE: Fire rate must be higher than crosshair 
 	//       interpolation speed (ShootTimeDurationSeconds)
-	bShouldFire(true),
 	bFireButtonPressed(false),
+	bShouldFire(true),
 	AutomaticFireRate(0.1f),
 
 	// Item tracing

@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/SphereComponent.h"
+#include "Camera/CameraComponent.h"
 #include "ShooterCharacter.h"
 
 // Sets default values
@@ -19,8 +20,7 @@ AItem::AItem() :
 	CameraTargetLocation(FVector(0.f)),
 	bInterping(false),
 	ZCurveTime(0.7f),
-	ItemInterpX(0.f),
-	ItemInterpY(0.f)
+	InterpInitialYawOffset(0.f)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -226,8 +226,6 @@ void AItem::StartItemCurve(AShooterCharacter* OriginCharacter)
 {
 	Character = OriginCharacter;
 
-	// TODO: Should probably just receive the "actor location"
-	//       as an argument instead of AShooterCharacter*
 	ItemInterpStartLocation = GetActorLocation();
 
 	bInterping = true;	// TODO: We actually don't need this if EIS_EquipInterpolating is the current state
@@ -239,6 +237,11 @@ void AItem::StartItemCurve(AShooterCharacter* OriginCharacter)
 		this, 
 		&AItem::ItemInterpTimerFinished, 
 		ZCurveTime);
+
+	const float InitialCameraRotationYaw = Character->GetFollowCamera()->GetComponentRotation().Yaw;
+	const float InitialItemRotationYaw = GetActorRotation().Yaw;
+
+	InterpInitialYawOffset = InitialItemRotationYaw - InitialCameraRotationYaw;
 }
 
 void AItem::ItemInterpTimerFinished()
@@ -258,36 +261,44 @@ void AItem::InterpolateItemLoad(float DeltaTime)
 		return;
 	}
 
-	if (Character && ItemZCurve)
+	if (!(Character || ItemZCurve))
 	{
-		const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
-		const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
-
-		FVector ItemLocation = ItemInterpStartLocation;
-		FVector CameraInterpLocation = Character->GetCameraInterpLocation();
-
-		const FVector ItemToCameraInterpLocation{ 
-			FVector(0.f, 0.f, (CameraInterpLocation -  ItemLocation).Z) 
-		};
-		const float DeltaZScaleFactor = ItemToCameraInterpLocation.Size();
-
-		const FVector CurrentLocation = GetActorLocation();
-		const float InterpXValue = FMath::FInterpTo(
-			CurrentLocation.X, 
-			CameraInterpLocation.X, 
-			DeltaTime, 
-			30.f);
-
-		const float InterpYValue = FMath::FInterpTo(
-			CurrentLocation.Y,
-			CameraInterpLocation.Y,
-			DeltaTime,
-			30.f);
-
-		ItemLocation.X = InterpXValue;
-		ItemLocation.Y = InterpYValue;
-
-		ItemLocation.Z +=  CurveValue * DeltaZScaleFactor;
-		SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+		return;
 	}
+
+	const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
+	const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
+
+	FVector ItemLocation = ItemInterpStartLocation;
+	FVector CameraInterpLocation = Character->GetCameraInterpLocation();
+
+	const FVector ItemToCameraInterpLocation{ 
+		FVector(0.f, 0.f, (CameraInterpLocation -  ItemLocation).Z) 
+	};
+	const float DeltaZScaleFactor = ItemToCameraInterpLocation.Size();
+
+	const FVector CurrentLocation = GetActorLocation();
+	const float InterpXValue = FMath::FInterpTo(
+		CurrentLocation.X, 
+		CameraInterpLocation.X, 
+		DeltaTime, 
+		30.f);
+
+	const float InterpYValue = FMath::FInterpTo(
+		CurrentLocation.Y,
+		CameraInterpLocation.Y,
+		DeltaTime,
+		30.f);
+
+	ItemLocation.X = InterpXValue;
+	ItemLocation.Y = InterpYValue;
+
+	ItemLocation.Z +=  CurveValue * DeltaZScaleFactor;
+	SetActorLocation(ItemLocation, true, nullptr, ETeleportType::TeleportPhysics);
+
+	/** Camera rotation this frame and its rotation relative to initial yaw offset */
+	const FRotator CameraRotation{ Character->GetFollowCamera()->GetComponentRotation() };
+	const FRotator ItemRotation{ 0.f, CameraRotation.Yaw + InterpInitialYawOffset, 0.f };
+
+	SetActorRotation(ItemRotation, ETeleportType::TeleportPhysics);
 }
