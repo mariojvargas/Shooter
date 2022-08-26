@@ -299,7 +299,11 @@ void AShooterCharacter::FireWeapon()
 
 void AShooterCharacter::SelectButtonPressed()
 {
-	DropWeapon();
+	if (TraceHitItem)
+	{
+		AWeapon* TraceHitWeapon = Cast<AWeapon>(TraceHitItem);
+		SwapWeapon(TraceHitWeapon);
+	}
 }
 
 void AShooterCharacter::SelectButtonReleased()
@@ -562,18 +566,18 @@ void AShooterCharacter::TraceForOverlappingItems()
 	}
 
 	// TODO: Refactor into maybe HitItem->ShowStatsHud()/HideStatsHud() 
-	AItem* HitItem = Cast<AItem>(ItemTraceResult.GetActor());
-	if (HitItem && HitItem->GetPickupWidget())
+	TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+	if (TraceHitItem && TraceHitItem->GetPickupWidget())
 	{
-		HitItem->GetPickupWidget()->SetVisibility(true);
+		TraceHitItem->GetPickupWidget()->SetVisibility(true);
 	}
 
-	if (LastTracedPickupItem && LastTracedPickupItem != HitItem)
+	if (LastTracedPickupItem && LastTracedPickupItem != TraceHitItem)
 	{
 		LastTracedPickupItem->GetPickupWidget()->SetVisibility(false);
 	}
 
-	LastTracedPickupItem = HitItem;
+	LastTracedPickupItem = TraceHitItem;
 }
 
 AWeapon* AShooterCharacter::SpawnDefaultWeapon()
@@ -616,4 +620,11 @@ void AShooterCharacter::DropWeapon()
 
 		EquippedWeapon = nullptr;
 	}
+}
+
+void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
+{
+	DropWeapon();
+	EquipWeapon(WeaponToSwap);
+	LastTracedPickupItem = nullptr;
 }
