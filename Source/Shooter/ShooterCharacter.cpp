@@ -587,5 +587,5 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
 
 	EquippedWeapon = WeaponToEquip;
 
-	EquippedWeapon->DisableInteractions();
+	EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 }
