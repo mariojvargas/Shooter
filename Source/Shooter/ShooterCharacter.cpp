@@ -224,6 +224,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 	PlayerInputComponent->BindAction("SelectButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::SelectButtonPressed);
 	PlayerInputComponent->BindAction("SelectButton", EInputEvent::IE_Released, this, &AShooterCharacter::SelectButtonReleased);
+
+	PlayerInputComponent->BindAction("ReloadButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::ReloadButtonPressed);
 }
 
 void AShooterCharacter::TurnWithMouse(float Value)
@@ -360,7 +362,7 @@ void AShooterCharacter::ResetAutoFire()
 	}
 	else
 	{
-		// TODO: Reload weapon
+		ReloadWeapon();
 	}
 }
 
@@ -377,6 +379,29 @@ void AShooterCharacter::SelectButtonReleased()
 {
 
 }
+
+void AShooterCharacter::ReloadButtonPressed()
+{
+	ReloadWeapon();
+}
+
+void AShooterCharacter::ReloadWeapon()
+{
+	if (CombatState != ECombatState::ECS_Ready)
+	{
+		return;
+	}
+
+	FName MontageSection(TEXT("Reload SMG"));
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && ReloadAnimMontage)
+	{
+		AnimInstance->Montage_Play(ReloadAnimMontage);
+		AnimInstance->Montage_JumpToSection(MontageSection);
+	}
+}
+
 
 bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamEndLocation)
 {
@@ -684,4 +709,9 @@ void AShooterCharacter::InitializeAmmoMap()
 bool AShooterCharacter::WeaponHasAmmo() const
 {
 	return EquippedWeapon ? EquippedWeapon->GetAmmo() > 0 : 0;
+}
+
+void AShooterCharacter::FinishReloading()
+{
+	CombatState = ECombatState::ECS_Ready;
 }

@@ -123,6 +123,10 @@ protected:
 
 	void PlayGunFireMontage();
 
+	void ReloadButtonPressed();
+
+	void ReloadWeapon();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -260,7 +264,14 @@ private:
 	/** Combat state can only occur when not occupied */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	ECombatState CombatState;
-	
+
+	/** Montage for reload animation */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* ReloadAnimMontage{ nullptr };
+
+	UFUNCTION(BlueprintCallable)
+	void FinishReloading();
+
 	/** Distance outward from the camera for the interp destination */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	float CameraInterpDistance;
@@ -278,6 +289,7 @@ private:
 	/** Starting assault rifle ammo amount */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
 	int32 StartingARAmmoAmount;
+
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
