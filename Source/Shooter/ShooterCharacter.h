@@ -8,6 +8,15 @@
 
 class AWeapon;
 
+UENUM(BlueprintType)
+enum class EAmmoType : uint8
+{
+	EAT_9mm UMETA(DisplayName = "9mm"),
+	EAT_AR UMETA(DisplayName = "AssaultRifle"),
+
+	EAT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -98,6 +107,8 @@ protected:
 	void SelectButtonReleased();
 
 	void SwapWeapon(AWeapon* WeaponToSwap);
+
+	void InitializeAmmoMap();
 
 public:	
 	// Called every frame
@@ -246,6 +257,16 @@ private:
 	/** Distance upward from the camera for the interp destination */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	float CameraInterpElevation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+	TMap<EAmmoType, int32> AmmoMap;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+	int32 Starting9mmAmmoAmount;
+
+	/** Starting assault rifle ammo amount */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+	int32 StartingARAmmoAmount;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 

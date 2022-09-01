@@ -62,7 +62,11 @@ AShooterCharacter::AShooterCharacter() :
 
 	// Camera interp location
 	CameraInterpDistance(250.f),
-	CameraInterpElevation(65.f)
+	CameraInterpElevation(65.f),
+
+	// Ammo
+	Starting9mmAmmoAmount(85),
+	StartingARAmmoAmount(120)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -105,6 +109,8 @@ void AShooterCharacter::BeginPlay()
 	}
 
 	EquipWeapon(SpawnDefaultWeapon());
+
+	InitializeAmmoMap();
 }
 
 // Called every frame
@@ -651,4 +657,10 @@ void AShooterCharacter::LoadPickupItem(AItem* Item)
 	{
 		SwapWeapon(Weapon);
 	}
+}
+
+void AShooterCharacter::InitializeAmmoMap()
+{
+	AmmoMap.Add(EAmmoType::EAT_9mm, Starting9mmAmmoAmount);
+	AmmoMap.Add(EAmmoType::EAT_AR, StartingARAmmoAmount);
 }
