@@ -2,11 +2,12 @@
 
 
 #include "Weapon.h"
-
+#include "Engine/SkeletalMeshSocket.h"
 
 AWeapon::AWeapon() :
     ThrowWeaponTime(DEFAULT_THROW_WEAPON_TIME),
-    bFalling(false)
+    bFalling(false),
+    Ammo(0)
 {
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -57,4 +58,32 @@ void AWeapon::EnsureWeaponIsUpright()
 {
     const FRotator MeshRotation{ 0.f, GetItemMesh()->GetComponentRotation().Yaw, 0.f };
     GetItemMesh()->SetWorldRotation(MeshRotation, false, nullptr, ETeleportType::TeleportPhysics);
+}
+
+void AWeapon::DecrementAmmo()
+{
+    if (Ammo - 1 <= 0)
+    {
+        Ammo = 0;
+    }
+    else
+    {
+        Ammo--;
+    }
+}
+
+bool AWeapon::TryGetBarrelSocketTransform(FTransform& OutBarrelSocketTransform) const
+{
+    if (GetItemMesh())
+    {
+        const USkeletalMeshSocket* BarrelSocket = GetItemMesh()->GetSocketByName("BarrelSocket");
+        if (BarrelSocket)
+        {
+            OutBarrelSocketTransform = BarrelSocket->GetSocketTransform(GetItemMesh());
+
+            return true;
+        }
+    }
+
+    return false;
 }

@@ -110,6 +110,8 @@ protected:
 
 	void InitializeAmmoMap();
 
+	bool WeaponHasAmmo() const;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -168,7 +170,7 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	class USoundCue* FireSound{ nullptr };
 
-	/** Firing flash spawned at BarrelSocket of character skeletal mesh */
+	/** Firing flash spawned at BarrelSocket of weapon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	class UParticleSystem* MuzzleFlash{ nullptr };
 

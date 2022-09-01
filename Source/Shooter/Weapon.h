@@ -35,9 +35,19 @@ private:
 
 	void EnsureWeaponIsUpright();
 
+	/** Ammo count for this weapon */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	int32 Ammo;
+
 public:
 	FORCEINLINE bool IsFalling() const
 	{
 		return GetItemState() == EItemState::EIS_Falling && bFalling;
 	}
+
+	FORCEINLINE int32 GetAmmo() const { return Ammo; }
+
+	void DecrementAmmo();
+
+	bool TryGetBarrelSocketTransform(FTransform& OutBarrelSocketTransform) const;
 };

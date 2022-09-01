@@ -254,23 +254,27 @@ void AShooterCharacter::LookUpAtRate(float Rate)
 
 void AShooterCharacter::FireWeapon()
 {
+	if (!EquippedWeapon)
+	{
+		return;
+	}
+
 	if (FireSound)
 	{
 		UGameplayStatics::PlaySound2D(this, FireSound);
 	}
 
-	const USkeletalMeshSocket* BarrelSocket = GetMesh()->GetSocketByName("BarrelSocket");
-	if (BarrelSocket)
+	FTransform BarrelSocketTransform;
+	if (EquippedWeapon->TryGetBarrelSocketTransform(BarrelSocketTransform))
 	{
-		const FTransform SocketTransform = BarrelSocket->GetSocketTransform(GetMesh());
 
 		if (MuzzleFlash)
 		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, SocketTransform);
+			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, BarrelSocketTransform);
 		}
 
 		FVector BeamEndLocation;
-		if (GetBeamEndLocation(SocketTransform.GetLocation(), BeamEndLocation))
+		if (GetBeamEndLocation(BarrelSocketTransform.GetLocation(), BeamEndLocation))
 		{
 			// Spawn impact particles after weapon beam end point is updated
 			if (ImpactParticles)
@@ -287,7 +291,7 @@ void AShooterCharacter::FireWeapon()
 			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(
 				GetWorld(), 
 				BeamParticles, 
-				SocketTransform);
+				BarrelSocketTransform);
 
 			if (Beam)
 			{
@@ -301,6 +305,11 @@ void AShooterCharacter::FireWeapon()
 	{
 		AnimInstance->Montage_Play(HipFireMontage);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
+	}
+
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->DecrementAmmo();
 	}
 
 	BeginCrosshairBulletFire();
@@ -461,7 +470,11 @@ void AShooterCharacter::EndCrosshairBulletFire()
 void AShooterCharacter::FireButtonPressed()
 {
 	bFireButtonPressed = true;
-	StartFireTimer();
+	
+	if (WeaponHasAmmo())
+	{
+		StartFireTimer();
+	}
 }
 
 void AShooterCharacter::FireButtonReleased()
@@ -487,11 +500,14 @@ void AShooterCharacter::StartFireTimer()
 
 void AShooterCharacter::ResetAutoFire()
 {
-	bShouldFire = true;
-
-	if (bFireButtonPressed)
+	if (WeaponHasAmmo())
 	{
-		StartFireTimer();
+		bShouldFire = true;
+
+		if (bFireButtonPressed)
+		{
+			StartFireTimer();
+		}
 	}
 }
 
@@ -663,4 +679,9 @@ void AShooterCharacter::InitializeAmmoMap()
 {
 	AmmoMap.Add(EAmmoType::EAT_9mm, Starting9mmAmmoAmount);
 	AmmoMap.Add(EAmmoType::EAT_AR, StartingARAmmoAmount);
+}
+
+bool AShooterCharacter::WeaponHasAmmo() const
+{
+	return EquippedWeapon ? EquippedWeapon->GetAmmo() > 0 : 0;
 }
