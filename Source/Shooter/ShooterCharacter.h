@@ -17,6 +17,16 @@ enum class EAmmoType : uint8
 	EAT_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+UENUM(BlueprintType)
+enum class ECombatState : uint8
+{
+	ECS_Ready	 UMETA(DisplayName = "Ready"),
+	ECS_FiringInProgress UMETA(DisplayName = "FiringInProgress"),
+	ECS_Reloading UMETA(DisplayName = "Reloading"),
+
+	ECS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -78,11 +88,6 @@ protected:
 
 	void CalculateCrosshairSpread(float DeltaTime);
 
-	void BeginCrosshairBulletFire();
-
-	UFUNCTION()
-	void EndCrosshairBulletFire();
-
 	void FireButtonPressed();
 
 	void FireButtonReleased();
@@ -111,6 +116,12 @@ protected:
 	void InitializeAmmoMap();
 
 	bool WeaponHasAmmo() const;
+
+	void PlayFireSound();
+
+	void SendBullet();
+
+	void PlayGunFireMontage();
 
 public:	
 	// Called every frame
@@ -218,15 +229,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
 
-	float ShootTimeDurationSeconds;
-	bool bFiringBullet;
-	FTimerHandle CrosshairShootTimer;
 
 	/** Left mouse button or gamepad right-trigger pressed */
 	bool bFireButtonPressed;
-
-	/** Determines whether we can fire. False when waiting */
-	bool bShouldFire;
 
 	float AutomaticFireRate;
 
@@ -252,6 +257,10 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	AItem* TraceHitItem;
 
+	/** Combat state can only occur when not occupied */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	ECombatState CombatState;
+	
 	/** Distance outward from the camera for the interp destination */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
 	float CameraInterpDistance;

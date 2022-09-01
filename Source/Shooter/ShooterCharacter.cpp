@@ -46,19 +46,18 @@ AShooterCharacter::AShooterCharacter() :
 	CrosshairAimFactor(0.f),
 	CrosshairShootingFactor(0.f),
 
-	// Bullet fire timer
-	ShootTimeDurationSeconds(0.05f),
-	bFiringBullet(false),
 
 	// Automatic gunfire configuration
 	// NOTE: Fire rate must be higher than crosshair 
 	//       interpolation speed (ShootTimeDurationSeconds)
 	bFireButtonPressed(false),
-	bShouldFire(true),
 	AutomaticFireRate(0.1f),
 
 	// Item tracing
 	bShouldTraceForOverlappingItems(false),
+
+	// Combat
+	CombatState(ECombatState::ECS_Ready),
 
 	// Camera interp location
 	CameraInterpDistance(250.f),
@@ -259,62 +258,111 @@ void AShooterCharacter::FireWeapon()
 		return;
 	}
 
+	if (CombatState != ECombatState::ECS_Ready)
+	{
+		return;
+	}
+
+	if (WeaponHasAmmo())
+	{
+		PlayFireSound();
+
+		SendBullet();
+
+		PlayGunFireMontage();
+
+		EquippedWeapon->DecrementAmmo();
+
+		StartFireTimer();
+	}
+}
+
+void AShooterCharacter::PlayFireSound()
+{
 	if (FireSound)
 	{
 		UGameplayStatics::PlaySound2D(this, FireSound);
 	}
+}
 
+void AShooterCharacter::SendBullet()
+{
 	FTransform BarrelSocketTransform;
-	if (EquippedWeapon->TryGetBarrelSocketTransform(BarrelSocketTransform))
+	if (!EquippedWeapon->TryGetBarrelSocketTransform(BarrelSocketTransform))
 	{
+		return;
+	}
 
-		if (MuzzleFlash)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, BarrelSocketTransform);
-		}
+	if (MuzzleFlash)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, BarrelSocketTransform);
+	}
 
-		FVector BeamEndLocation;
-		if (GetBeamEndLocation(BarrelSocketTransform.GetLocation(), BeamEndLocation))
+	FVector BeamEndLocation;
+	if (GetBeamEndLocation(BarrelSocketTransform.GetLocation(), BeamEndLocation))
+	{
+		// Spawn impact particles after weapon beam end point is updated
+		if (ImpactParticles)
 		{
-			// Spawn impact particles after weapon beam end point is updated
-			if (ImpactParticles)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(
-					GetWorld(), 
-					ImpactParticles, 
-					BeamEndLocation);
-			}
-		}
-
-		if (BeamParticles)
-		{
-			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(
+			UGameplayStatics::SpawnEmitterAtLocation(
 				GetWorld(), 
-				BeamParticles, 
-				BarrelSocketTransform);
-
-			if (Beam)
-			{
-				Beam->SetVectorParameter(FName("Target"), BeamEndLocation);
-			}
+				ImpactParticles, 
+				BeamEndLocation);
 		}
 	}
 
+	if (BeamParticles)
+	{
+		UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(
+			GetWorld(), 
+			BeamParticles, 
+			BarrelSocketTransform);
+
+		if (Beam)
+		{
+			Beam->SetVectorParameter(FName("Target"), BeamEndLocation);
+		}
+	}
+}
+
+void AShooterCharacter::PlayGunFireMontage()
+{
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && HipFireMontage)
 	{
 		AnimInstance->Montage_Play(HipFireMontage);
 		AnimInstance->Montage_JumpToSection(FName("StartFire"));
 	}
-
-	if (EquippedWeapon)
-	{
-		EquippedWeapon->DecrementAmmo();
-	}
-
-	BeginCrosshairBulletFire();
 }
 
+void AShooterCharacter::StartFireTimer()
+{
+	CombatState = ECombatState::ECS_FiringInProgress;
+
+	GetWorldTimerManager().SetTimer(
+		AutoFireTimer,
+		this,
+		&AShooterCharacter::ResetAutoFire,
+		AutomaticFireRate
+	);
+}
+
+void AShooterCharacter::ResetAutoFire()
+{
+	CombatState = ECombatState::ECS_Ready;
+
+	if (WeaponHasAmmo())
+	{
+		if (bFireButtonPressed)
+		{
+			FireWeapon();
+		}
+	}
+	else
+	{
+		// TODO: Reload weapon
+	}
+}
 
 void AShooterCharacter::SelectButtonPressed()
 {
@@ -422,7 +470,7 @@ void AShooterCharacter::CalculateCrosshairSpread(float DeltaTime)
 			30.f);
 	}
 
-	if (bFiringBullet)
+	if (CombatState == ECombatState::ECS_FiringInProgress)
 	{
 		CrosshairShootingFactor = FMath::FInterpTo(
 			CrosshairShootingFactor,
@@ -451,64 +499,16 @@ float AShooterCharacter::GetCrosshairSpreadMultiplier() const
 	return CrosshairSpreadMultiplier;
 }
 
-void AShooterCharacter::BeginCrosshairBulletFire()
-{
-	bFiringBullet = true;
-
-	GetWorldTimerManager().SetTimer(
-		CrosshairShootTimer, 
-		this, 
-		&AShooterCharacter::EndCrosshairBulletFire, 
-		ShootTimeDurationSeconds);
-}
-
-void AShooterCharacter::EndCrosshairBulletFire()
-{
-	bFiringBullet = false;
-}
-
 void AShooterCharacter::FireButtonPressed()
 {
 	bFireButtonPressed = true;
 	
-	if (WeaponHasAmmo())
-	{
-		StartFireTimer();
-	}
+	FireWeapon();
 }
 
 void AShooterCharacter::FireButtonReleased()
 {
 	bFireButtonPressed = false;
-}
-
-void AShooterCharacter::StartFireTimer()
-{
-	if (bShouldFire)
-	{
-		FireWeapon();
-		bShouldFire = false;
-
-		GetWorldTimerManager().SetTimer(
-			AutoFireTimer,
-			this,
-			&AShooterCharacter::ResetAutoFire,
-			AutomaticFireRate
-		);
-	}
-}
-
-void AShooterCharacter::ResetAutoFire()
-{
-	if (WeaponHasAmmo())
-	{
-		bShouldFire = true;
-
-		if (bFireButtonPressed)
-		{
-			StartFireTimer();
-		}
-	}
 }
 
 bool AShooterCharacter::TryGetTraceUnderCrosshairs(FHitResult& OutHitResult, FVector& OutTraceEndOrHitLocation)
