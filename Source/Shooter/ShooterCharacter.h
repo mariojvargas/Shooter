@@ -122,6 +122,12 @@ protected:
 	/** Checks whether the character has ammo of the equipped weapon's ammo type */
 	bool IsCarryingAmmo();
 
+	UFUNCTION(BlueprintCallable)
+	void GrabClip();
+
+	UFUNCTION(BlueprintCallable)
+	void ReleaseClip();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -285,6 +291,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
 	int32 StartingARAmmoAmount;
 
+	/** Transform of the gun's magazine clip when it's grabbed during reloading */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	FTransform ClipTransform;
+
+	/** Scene component to attach to the character's hand during reloading */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	USceneComponent* HandSceneComponent;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 

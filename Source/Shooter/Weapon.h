@@ -64,6 +64,13 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FName ReloadMontageSectionName;
 
+	/** Indicates whether the clip is moving while reloading */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	bool bMovingClip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	FName ClipBoneName;
+
 public:
 	FORCEINLINE bool IsFalling() const
 	{
@@ -85,4 +92,8 @@ public:
 	FORCEINLINE FName GetReloadMontageSectionName() const { return ReloadMontageSectionName; }
 
 	void ReloadAmmo(int32 Amount);
+
+	FORCEINLINE FName GetClipBoneName() const { return ClipBoneName; }
+
+	FORCEINLINE void SetMovingClip(bool bValue) { bMovingClip = bValue; }
 };

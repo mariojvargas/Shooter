@@ -94,6 +94,9 @@ AShooterCharacter::AShooterCharacter() :
 	GetCharacterMovement()->RotationRate = FRotator(0.f, 540.f, 0.f);	// ... at the rotation rate here
 	GetCharacterMovement()->JumpZVelocity = 600.f;
 	GetCharacterMovement()->AirControl = 0.2f;
+
+	// Create Hand Scene Component. Don't attach since it will be handled during reloading
+	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Scene Component"));
 }
 
 // Called when the game starts or when spawned
@@ -755,4 +758,34 @@ bool AShooterCharacter::IsCarryingAmmo()
 	auto AmmoType = EquippedWeapon->GetAmmoType();
 
 	return AmmoMap.Contains(AmmoType) && AmmoMap[AmmoType] > 0;
+}
+
+void AShooterCharacter::GrabClip()
+{
+	if (!EquippedWeapon)
+	{
+		return;
+	}
+
+	if (!HandSceneComponent)
+	{
+		return;
+	}
+
+	int32 ClipBoneIndex = EquippedWeapon->GetItemMesh()->GetBoneIndex(EquippedWeapon->GetClipBoneName());
+	ClipTransform = EquippedWeapon->GetItemMesh()->GetBoneTransform(ClipBoneIndex);
+
+	FAttachmentTransformRules AttachmentRules(EAttachmentRule::KeepRelative, true);
+	HandSceneComponent->AttachToComponent(GetMesh(), AttachmentRules, FName(TEXT("hand_l")));
+	HandSceneComponent->SetWorldTransform(ClipTransform);
+
+	EquippedWeapon->SetMovingClip(true);
+}
+
+void AShooterCharacter::ReleaseClip()
+{
+	if (EquippedWeapon)
+	{
+		EquippedWeapon->SetMovingClip(false);
+	}
 }
