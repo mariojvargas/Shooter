@@ -375,6 +375,11 @@ void AShooterCharacter::SelectButtonPressed()
 	{
 		// TODO: Maybe an event is better?
 		TraceHitItem->StartItemCurve(this);
+
+		if (TraceHitItem->GetPickupSound())
+		{
+			UGameplayStatics::PlaySound2D(this, TraceHitItem->GetPickupSound());
+		}
 	}
 }
 
@@ -698,6 +703,16 @@ FVector AShooterCharacter::GetCameraInterpLocation()
 
 void AShooterCharacter::LoadPickupItem(AItem* Item)
 {
+	if (!Item)
+	{
+		return;
+	}
+
+	if (Item->GetEquipSound())
+	{
+		UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
+	}
+
 	AWeapon* Weapon = Cast<AWeapon>(Item);
 	if (Weapon)
 	{
