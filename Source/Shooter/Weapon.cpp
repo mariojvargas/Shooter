@@ -7,7 +7,11 @@
 AWeapon::AWeapon() :
     ThrowWeaponTime(DEFAULT_THROW_WEAPON_TIME),
     bFalling(false),
-    Ammo(0)
+    MagazineCapacity(30),
+    Ammo(30),
+    WeaponType(EWeaponType::EWT_SubmachineGun),
+    AmmoType(EAmmoType::EAT_9mm),
+    ReloadMontageSectionName(FName(TEXT("Reload SMG")))
 {
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -86,4 +90,10 @@ bool AWeapon::TryGetBarrelSocketTransform(FTransform& OutBarrelSocketTransform) 
     }
 
     return false;
+}
+
+void AWeapon::ReloadAmmo(int32 Amount)
+{
+    checkf(Ammo + Amount <= MagazineCapacity, TEXT("Attempted to reload with more than magazine capacity"));
+    Ammo += Amount;
 }

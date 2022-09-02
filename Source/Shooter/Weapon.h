@@ -4,7 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "Item.h"
+#include "AmmoType.h"
 #include "Weapon.generated.h"
+
+UENUM(BlueprintType)
+enum class EWeaponType : uint8
+{
+	EWT_SubmachineGun UMETA(DisplayName = "SubmachineGun"),
+	EWT_AssaultRifle UMETA(DisplayName = "AssaultRifle"),
+
+	EWT_MAX UMETA(DisplayName = "DefaultMAX")
+};
 
 /**
  * 
@@ -25,6 +35,8 @@ public:
 	/** Tosses weapon with impulse */
 	void ThrowWeapon();
 
+	bool TryGetBarrelSocketTransform(FTransform& OutBarrelSocketTransform) const;
+
 protected:
 	void StopFalling();
 
@@ -35,9 +47,22 @@ private:
 
 	void EnsureWeaponIsUpright();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	int32  MagazineCapacity;
+
 	/** Ammo count for this weapon */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	int32 Ammo;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	EWeaponType WeaponType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	EAmmoType AmmoType;
+
+	/** Animation montage section name for this weapon */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
+	FName ReloadMontageSectionName;
 
 public:
 	FORCEINLINE bool IsFalling() const
@@ -47,7 +72,17 @@ public:
 
 	FORCEINLINE int32 GetAmmo() const { return Ammo; }
 
+	FORCEINLINE int32 GetMagazineCapacity() const { return MagazineCapacity; }
+
+	FORCEINLINE EWeaponType GetWeaponType() { return WeaponType; }
+
 	void DecrementAmmo();
 
-	bool TryGetBarrelSocketTransform(FTransform& OutBarrelSocketTransform) const;
+	FORCEINLINE EWeaponType GetWeaponType() const { return WeaponType; }
+
+	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
+
+	FORCEINLINE FName GetReloadMontageSectionName() const { return ReloadMontageSectionName; }
+
+	void ReloadAmmo(int32 Amount);
 };
