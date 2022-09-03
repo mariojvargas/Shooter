@@ -6,6 +6,21 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 
+UShooterAnimInstance::UShooterAnimInstance() :
+    Speed(0.f),
+    bIsInAir(false),
+    bIsAccelerating(false),
+    MovementOffsetYaw(0.f),
+    LastMovementOffsetYaw(0.f),
+    bAiming(false),
+    CharacterYaw(0.f),
+    CharacterYawLastFrame(0.f),
+    RootYawOffset(0.f),
+    RotationCurveValue(0.f),
+    RotationCurveValueLastFrame(0.f)
+{
+}
+
 void UShooterAnimInstance::NativeInitializeAnimation()
 {
     ShooterCharacter = Cast<AShooterCharacter>(TryGetPawnOwner());
@@ -53,4 +68,78 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
         //     GEngine->AddOnScreenDebugMessage(3, 0, FColor::Cyan, OffsetMessage);
         // }
     }
+
+    TurnInPlace();
+}
+
+void UShooterAnimInstance::TurnInPlace()
+{
+    if (!ShooterCharacter)
+    {
+        return;
+    }
+
+    if (Speed > 0)
+    {
+        // Don't turn in place because character is moving
+        RootYawOffset = 0.f;
+        CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+        CharacterYawLastFrame = CharacterYaw;
+        RotationCurveValueLastFrame = 0.f;
+        RotationCurveValue = 0.f;
+    }
+    else
+    {
+        CharacterYawLastFrame = CharacterYaw;
+        CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+
+        const float YawDelta{ CharacterYaw - CharacterYawLastFrame };
+
+        // Root yaw offset updated and clamped [-180, 180]
+        RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - YawDelta);
+
+        const float TurningCurveValue{ GetCurveValue(TEXT("Turning")) };
+
+        // 1.0 if turning; 0 if not
+        if (TurningCurveValue > 0)
+        {
+            RotationCurveValueLastFrame = RotationCurveValue;
+            RotationCurveValue = GetCurveValue(TEXT("Rotation"));
+
+            const float DeltaRotation{ RotationCurveValue - RotationCurveValueLastFrame };
+
+            // If root yaw offset is positive, we're turning left
+            // but if root yaw offset is negative, we're turning right
+            RootYawOffset = (RootYawOffset > 0) 
+                ? RootYawOffset - DeltaRotation 
+                : RootYawOffset + DeltaRotation;
+
+            const float AbsoluteRootYawOffset = FMath::Abs(RootYawOffset);
+            if (AbsoluteRootYawOffset > 90.f)
+            {
+                const float ExcessYaw{ AbsoluteRootYawOffset - 90.f };
+                RootYawOffset = (RootYawOffset > 0) 
+                    ? RootYawOffset - ExcessYaw 
+                    : RootYawOffset + ExcessYaw;
+            }
+        }
+
+        if (GEngine)
+        {
+            GEngine->AddOnScreenDebugMessage(
+                1, 
+                -1,
+                FColor::Green, 
+                FString::Printf(TEXT("CharacterYaw: %f"), CharacterYaw)
+            );
+
+            GEngine->AddOnScreenDebugMessage(
+                2, 
+                -1,
+                FColor::Yellow, 
+                FString::Printf(TEXT("RootYawOffset: %f"), RootYawOffset)
+            );
+        }
+    }
+    
 }
