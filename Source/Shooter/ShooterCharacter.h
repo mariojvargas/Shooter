@@ -323,6 +323,11 @@ public:
 		return OverlappedItemCount;
 	}
 
+	FORCEINLINE ECombatState GetCombatState() const
+	{
+		return CombatState;
+	}
+
 	/** Adds given amount to current number of overlapped items */
 	void AddOverlappedItemCount(int32 Amount);
 

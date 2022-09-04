@@ -98,3 +98,9 @@ void AWeapon::ReloadAmmo(int32 Amount)
     checkf(Ammo + Amount <= MagazineCapacity, TEXT("Attempted to reload with more than magazine capacity"));
     Ammo += Amount;
 }
+
+bool AWeapon::IsClipFull() const 
+{ 
+    return Ammo >= MagazineCapacity; 
+}
+

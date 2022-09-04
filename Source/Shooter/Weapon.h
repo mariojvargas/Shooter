@@ -37,6 +37,8 @@ public:
 
 	bool TryGetBarrelSocketTransform(FTransform& OutBarrelSocketTransform) const;
 
+	 bool IsClipFull() const;
+
 protected:
 	void StopFalling();
 

@@ -17,7 +17,9 @@ UShooterAnimInstance::UShooterAnimInstance() :
     CharacterYawLastFrame(0.f),
     RootYawOffset(0.f),
     RotationCurveValue(0.f),
-    RotationCurveValueLastFrame(0.f)
+    RotationCurveValueLastFrame(0.f),
+    Pitch(0.f),
+    bReloading(false)
 {
 }
 
@@ -35,6 +37,8 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
     if (ShooterCharacter)
     {
+        bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
+
         // Get the speed of the character from velocity
         FVector Velocity{ ShooterCharacter->GetVelocity() };
         Velocity.Z = 0; // We just need the lateral velocity components, so Z isn't needed
@@ -78,6 +82,8 @@ void UShooterAnimInstance::TurnInPlace()
     {
         return;
     }
+
+    Pitch = ShooterCharacter->GetBaseAimRotation().Pitch;
 
     if (Speed > 0)
     {
