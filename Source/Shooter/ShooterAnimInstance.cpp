@@ -19,7 +19,8 @@ UShooterAnimInstance::UShooterAnimInstance() :
     RotationCurveValue(0.f),
     RotationCurveValueLastFrame(0.f),
     Pitch(0.f),
-    bReloading(false)
+    bReloading(false),
+    OffsetState(EOffsetState::EOS_Aiming)
 {
 }
 
@@ -71,6 +72,23 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
         //     FString OffsetMessage = FString::Printf(TEXT("Movement Offset Yaw: %f"), MovementOffsetYaw);
         //     GEngine->AddOnScreenDebugMessage(3, 0, FColor::Cyan, OffsetMessage);
         // }
+
+        if (bReloading)
+        {
+            OffsetState = EOffsetState::EOS_Reloading;
+        }
+        else if (bIsInAir)
+        {
+            OffsetState = EOffsetState::EOS_InAir;
+        }
+        else if (bAiming)
+        {
+            OffsetState = EOffsetState::EOS_Aiming;
+        }
+        else
+        {
+            OffsetState = EOffsetState::EOS_Hip;
+        }
     }
 
     TurnInPlace();
@@ -85,7 +103,7 @@ void UShooterAnimInstance::TurnInPlace()
 
     Pitch = ShooterCharacter->GetBaseAimRotation().Pitch;
 
-    if (Speed > 0)
+    if (Speed > 0 || bIsInAir)
     {
         // Don't turn in place because character is moving
         RootYawOffset = 0.f;

@@ -6,6 +6,18 @@
 #include "Animation/AnimInstance.h"
 #include "ShooterAnimInstance.generated.h"
 
+// enum class => "scoped enum". Need to remember that term!
+UENUM(BlueprintType)
+enum class EOffsetState : uint8
+{
+	EOS_Aiming UMETA(DisplayName = "Aiming"),
+ 	EOS_Hip UMETA(DisplayName = "Hip"),
+	EOS_Reloading UMETA(DisplayName = "Reloading"),
+ 	EOS_InAir UMETA(DisplayName = "InAir"),
+  
+	EOS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
 /**
  * 
  */
@@ -74,4 +86,8 @@ private:
 	/** Indicates whether we should prevent aim offset while reloading */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn in Place", meta = (AllowPrivateAccess = "true"))
 	bool bReloading;
+
+	/** Used to determine which aim offset is active */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turn in Place", meta = (AllowPrivateAccess = "true"))
+	EOffsetState OffsetState;
 };
