@@ -13,14 +13,17 @@ UShooterAnimInstance::UShooterAnimInstance() :
     MovementOffsetYaw(0.f),
     LastMovementOffsetYaw(0.f),
     bAiming(false),
-    CharacterYaw(0.f),
-    CharacterYawLastFrame(0.f),
+    TurnInPlaceCharacterYaw(0.f),
+    TurnInPlaceCharacterYawLastFrame(0.f),
     RootYawOffset(0.f),
     RotationCurveValue(0.f),
     RotationCurveValueLastFrame(0.f),
     Pitch(0.f),
     bReloading(false),
-    OffsetState(EOffsetState::EOS_Aiming)
+    OffsetState(EOffsetState::EOS_Aiming),
+    CharacterRotation(FRotator(0.f)),
+    CharacterRotationLastFrame(FRotator(0.f)),
+    LeaningYawDelta(0.f)
 {
 }
 
@@ -92,6 +95,8 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
     }
 
     TurnInPlace();
+
+    Lean(DeltaTime);
 }
 
 void UShooterAnimInstance::TurnInPlace()
@@ -107,20 +112,20 @@ void UShooterAnimInstance::TurnInPlace()
     {
         // Don't turn in place because character is moving
         RootYawOffset = 0.f;
-        CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
-        CharacterYawLastFrame = CharacterYaw;
+        TurnInPlaceCharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+        TurnInPlaceCharacterYawLastFrame = TurnInPlaceCharacterYaw;
         RotationCurveValueLastFrame = 0.f;
         RotationCurveValue = 0.f;
     }
     else
     {
-        CharacterYawLastFrame = CharacterYaw;
-        CharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
+        TurnInPlaceCharacterYawLastFrame = TurnInPlaceCharacterYaw;
+        TurnInPlaceCharacterYaw = ShooterCharacter->GetActorRotation().Yaw;
 
-        const float YawDelta{ CharacterYaw - CharacterYawLastFrame };
+        const float TurnInPlaceYawDelta{ TurnInPlaceCharacterYaw - TurnInPlaceCharacterYawLastFrame };
 
         // Root yaw offset updated and clamped [-180, 180]
-        RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - YawDelta);
+        RootYawOffset = UKismetMathLibrary::NormalizeAxis(RootYawOffset - TurnInPlaceYawDelta);
 
         const float TurningCurveValue{ GetCurveValue(TEXT("Turning")) };
 
@@ -154,7 +159,7 @@ void UShooterAnimInstance::TurnInPlace()
                 1, 
                 -1,
                 FColor::Green, 
-                FString::Printf(TEXT("CharacterYaw: %f"), CharacterYaw)
+                FString::Printf(TEXT("CharacterYaw: %f"), TurnInPlaceCharacterYaw)
             );
 
             GEngine->AddOnScreenDebugMessage(
@@ -166,4 +171,42 @@ void UShooterAnimInstance::TurnInPlace()
         }
     }
     
+}
+
+void UShooterAnimInstance::Lean(float DeltaTime)
+{
+    if (!ShooterCharacter)
+    {
+        return;
+    }
+
+    CharacterRotationLastFrame = CharacterRotation;
+    CharacterRotation = ShooterCharacter->GetActorRotation();
+
+    const FRotator DeltaRotation = UKismetMathLibrary::NormalizedDeltaRotator(
+        CharacterRotation, 
+        CharacterRotationLastFrame);
+
+    float TargetYawRateOfChange{ ((float) DeltaRotation.Yaw) / DeltaTime };
+
+    const float Interp{ FMath::FInterpTo(LeaningYawDelta, TargetYawRateOfChange, DeltaTime, 6.f) };
+
+    LeaningYawDelta = FMath::Clamp(Interp, -90.f, 90.f);
+
+    if (GEngine)
+    {
+        GEngine->AddOnScreenDebugMessage(
+            3,
+            -1,
+            FColor::Cyan,
+            FString::Printf(TEXT("LeaningYawDelta %f"), LeaningYawDelta)
+        );
+
+        GEngine->AddOnScreenDebugMessage(
+            4,
+            -1,
+            FColor::Cyan,
+            FString::Printf(TEXT("DeltaRotation.Yaw %f"), DeltaRotation.Yaw)
+        );
+    }
 }
