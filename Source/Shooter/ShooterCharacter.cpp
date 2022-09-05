@@ -46,7 +46,6 @@ AShooterCharacter::AShooterCharacter() :
 	CrosshairAimFactor(0.f),
 	CrosshairShootingFactor(0.f),
 
-
 	// Automatic gunfire configuration
 	// NOTE: Fire rate must be higher than crosshair 
 	//       interpolation speed (ShootTimeDurationSeconds)
@@ -65,7 +64,9 @@ AShooterCharacter::AShooterCharacter() :
 
 	// Ammo
 	Starting9mmAmmoAmount(85),
-	StartingARAmmoAmount(120)
+	StartingARAmmoAmount(120),
+
+	bCrouching(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -229,6 +230,8 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("SelectButton", EInputEvent::IE_Released, this, &AShooterCharacter::SelectButtonReleased);
 
 	PlayerInputComponent->BindAction("ReloadButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::ReloadButtonPressed);
+
+	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this, &AShooterCharacter::CrouchButtonPressed);
 }
 
 void AShooterCharacter::TurnWithMouse(float Value)
@@ -802,5 +805,13 @@ void AShooterCharacter::ReleaseClip()
 	if (EquippedWeapon)
 	{
 		EquippedWeapon->SetMovingClip(false);
+	}
+}
+
+void AShooterCharacter::CrouchButtonPressed()
+{
+	if (!GetCharacterMovement()->IsFalling())
+	{
+		bCrouching = !bCrouching;
 	}
 }

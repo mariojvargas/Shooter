@@ -103,4 +103,7 @@ private:
 	/** Yaw delta for leaning in the running blendspace */
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Lean, meta = (AllowPrivateAccess = "true"))
 	float LeaningYawDelta;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bCrouching;
 };

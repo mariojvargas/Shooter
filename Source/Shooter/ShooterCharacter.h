@@ -128,6 +128,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void ReleaseClip();
 
+	void CrouchButtonPressed();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -299,6 +301,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	USceneComponent* HandSceneComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	bool bCrouching;
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
 	{ 
@@ -326,6 +331,11 @@ public:
 	FORCEINLINE ECombatState GetCombatState() const
 	{
 		return CombatState;
+	}
+
+	FORCEINLINE bool IsCrouching() const
+	{ 
+		return bCrouching; 
 	}
 
 	/** Adds given amount to current number of overlapped items */

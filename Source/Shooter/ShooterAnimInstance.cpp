@@ -23,7 +23,8 @@ UShooterAnimInstance::UShooterAnimInstance() :
     OffsetState(EOffsetState::EOS_Aiming),
     CharacterRotation(FRotator(0.f)),
     CharacterRotationLastFrame(FRotator(0.f)),
-    LeaningYawDelta(0.f)
+    LeaningYawDelta(0.f),
+    bCrouching(false)
 {
 }
 
@@ -41,6 +42,8 @@ void UShooterAnimInstance::UpdateAnimationProperties(float DeltaTime)
 
     if (ShooterCharacter)
     {
+        bCrouching = ShooterCharacter->IsCrouching();
+
         bReloading = ShooterCharacter->GetCombatState() == ECombatState::ECS_Reloading;
 
         // Get the speed of the character from velocity
@@ -153,22 +156,22 @@ void UShooterAnimInstance::TurnInPlace()
             }
         }
 
-        if (GEngine)
-        {
-            GEngine->AddOnScreenDebugMessage(
-                1, 
-                -1,
-                FColor::Green, 
-                FString::Printf(TEXT("CharacterYaw: %f"), TurnInPlaceCharacterYaw)
-            );
+        // if (GEngine)
+        // {
+        //     GEngine->AddOnScreenDebugMessage(
+        //         1, 
+        //         -1,
+        //         FColor::Green, 
+        //         FString::Printf(TEXT("CharacterYaw: %f"), TurnInPlaceCharacterYaw)
+        //     );
 
-            GEngine->AddOnScreenDebugMessage(
-                2, 
-                -1,
-                FColor::Yellow, 
-                FString::Printf(TEXT("RootYawOffset: %f"), RootYawOffset)
-            );
-        }
+        //     GEngine->AddOnScreenDebugMessage(
+        //         2, 
+        //         -1,
+        //         FColor::Yellow, 
+        //         FString::Printf(TEXT("RootYawOffset: %f"), RootYawOffset)
+        //     );
+        // }
     }
     
 }
@@ -193,20 +196,20 @@ void UShooterAnimInstance::Lean(float DeltaTime)
 
     LeaningYawDelta = FMath::Clamp(Interp, -90.f, 90.f);
 
-    if (GEngine)
-    {
-        GEngine->AddOnScreenDebugMessage(
-            3,
-            -1,
-            FColor::Cyan,
-            FString::Printf(TEXT("LeaningYawDelta %f"), LeaningYawDelta)
-        );
+    // if (GEngine)
+    // {
+    //     GEngine->AddOnScreenDebugMessage(
+    //         3,
+    //         -1,
+    //         FColor::Cyan,
+    //         FString::Printf(TEXT("LeaningYawDelta %f"), LeaningYawDelta)
+    //     );
 
-        GEngine->AddOnScreenDebugMessage(
-            4,
-            -1,
-            FColor::Cyan,
-            FString::Printf(TEXT("DeltaRotation.Yaw %f"), DeltaRotation.Yaw)
-        );
-    }
+    //     GEngine->AddOnScreenDebugMessage(
+    //         4,
+    //         -1,
+    //         FColor::Cyan,
+    //         FString::Printf(TEXT("DeltaRotation.Yaw %f"), DeltaRotation.Yaw)
+    //     );
+    // }
 }
