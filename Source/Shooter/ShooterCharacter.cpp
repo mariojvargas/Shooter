@@ -13,6 +13,7 @@
 #include "Components/WidgetComponent.h"
 #include "Item.h"
 #include "Weapon.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() : 
@@ -69,7 +70,13 @@ AShooterCharacter::AShooterCharacter() :
 	bCrouching(false),
 
 	BaseMovementSpeed(650.f),
-	CrouchMovementSpeed(300.f)
+	CrouchMovementSpeed(300.f),
+
+	StandingCapsuleHalfHeight(88.f),
+	CrouchingCapsuleHalfHeight(44.f),
+
+	BaseGroundFriction(2.f),
+	CrouchingGroundFriction(100.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -79,7 +86,7 @@ AShooterCharacter::AShooterCharacter() :
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = CAMERA_BOOM_ARM_LENGTH;	// Follow character at this distance
 	CameraBoom->bUsePawnControlRotation = true;	// Rotate the spring arm based on the character controller
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 70.f);
+	CameraBoom->SocketOffset = FVector(0.f, 50.f, 45.f);
 
 	// Create follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Follow Camera"));
@@ -133,6 +140,8 @@ void AShooterCharacter::Tick(float DeltaTime)
 	CalculateCrosshairSpread(DeltaTime);
 
 	TraceForOverlappingItems();
+
+	InterpCapsuleHalfHeight(DeltaTime);
 }
 
 
@@ -662,6 +671,30 @@ void AShooterCharacter::TraceForOverlappingItems()
 	LastTracedPickupItem = TraceHitItem;
 }
 
+void AShooterCharacter::InterpCapsuleHalfHeight(float DeltaTime)
+{
+	const float TargetCapsuleHalfHeight = (bCrouching) 
+		? CrouchingCapsuleHalfHeight 
+		: StandingCapsuleHalfHeight;
+
+	const float InterpHalfHeight{ 
+		FMath::FInterpTo(
+			GetCapsuleComponent()->GetScaledCapsuleHalfHeight(), 
+			TargetCapsuleHalfHeight, 
+			DeltaTime, 
+			20.f
+		) 
+	};
+
+	// Delta Capsule Half Height: Negative value if crouching; positive value if standing
+	const float DeltaCapsuleHalfHeight{ InterpHalfHeight - GetCapsuleComponent()->GetScaledCapsuleHalfHeight() };
+	const FVector MeshOffset{ 0.f, 0.f, -DeltaCapsuleHalfHeight };
+	GetMesh()->AddLocalOffset(MeshOffset);
+
+	GetCapsuleComponent()->SetCapsuleHalfHeight(InterpHalfHeight);
+}
+
+
 AWeapon* AShooterCharacter::SpawnDefaultWeapon()
 {
 	if (DefaultWeaponClass)
@@ -833,5 +866,14 @@ void AShooterCharacter::CrouchButtonPressed()
 		bCrouching = !bCrouching;
 	}
 
-	GetCharacterMovement()->MaxWalkSpeed = (bCrouching) ? CrouchMovementSpeed : BaseMovementSpeed;
+	if (bCrouching)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+		GetCharacterMovement()->GroundFriction = CrouchingGroundFriction;
+	}
+	else
+	{
+		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+		GetCharacterMovement()->GroundFriction = BaseGroundFriction;
+	}
 }
