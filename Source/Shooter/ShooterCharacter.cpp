@@ -66,7 +66,10 @@ AShooterCharacter::AShooterCharacter() :
 	Starting9mmAmmoAmount(85),
 	StartingARAmmoAmount(120),
 
-	bCrouching(false)
+	bCrouching(false),
+
+	BaseMovementSpeed(650.f),
+	CrouchMovementSpeed(300.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -114,6 +117,8 @@ void AShooterCharacter::BeginPlay()
 	EquipWeapon(SpawnDefaultWeapon());
 
 	InitializeAmmoMap();
+
+	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 }
 
 // Called every frame
@@ -217,7 +222,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAxis("Turn", this, &AShooterCharacter::TurnWithMouse);
 	PlayerInputComponent->BindAxis("LookUp", this, &AShooterCharacter::LookUpWithMouse);
 
-	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
+	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &AShooterCharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::FireButtonPressed);
@@ -257,6 +262,19 @@ void AShooterCharacter::TurnAtRate(float Rate)
 void AShooterCharacter::LookUpAtRate(float Rate)
 {
 	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AShooterCharacter::Jump()
+{
+	if (bCrouching)
+	{
+		bCrouching = false;
+		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+	}
+	else
+	{
+		Super::Jump();
+	}
 }
 
 void AShooterCharacter::FireWeapon()
@@ -814,4 +832,6 @@ void AShooterCharacter::CrouchButtonPressed()
 	{
 		bCrouching = !bCrouching;
 	}
+
+	GetCharacterMovement()->MaxWalkSpeed = (bCrouching) ? CrouchMovementSpeed : BaseMovementSpeed;
 }
