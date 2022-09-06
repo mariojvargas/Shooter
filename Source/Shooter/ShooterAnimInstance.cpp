@@ -160,45 +160,6 @@ void UShooterAnimInstance::TurnInPlace()
             }
         }
 
-        // TODO: Move to a function. This is so hard to read :-(
-        // Calculate recoil weight
-        if (bTurningInPlace)
-        {
-            if (bReloading)
-            {
-                RecoilWeight = 1.f;
-            }
-            else
-            {
-                RecoilWeight = 0.f;
-            }
-        }
-        else // not turning in place
-        {
-            if (bCrouching)
-            {
-                if (bReloading)
-                {
-                    RecoilWeight = 1.f;
-                }
-                else
-                {
-                    RecoilWeight = 0.1f;
-                }
-            }
-            else
-            {
-                if (bAiming || bReloading)
-                {
-                    RecoilWeight = 1.f;
-                }
-                else
-                {
-                    RecoilWeight = 0.5f;
-                }
-            }
-        }
-
         // if (GEngine)
         // {
         //     GEngine->AddOnScreenDebugMessage(
@@ -216,7 +177,45 @@ void UShooterAnimInstance::TurnInPlace()
         //     );
         // }
     }
-    
+
+    // TODO: Move to a function. This is so hard to read :-(
+    // Calculate recoil weight
+    if (bTurningInPlace)
+    {
+        if (bReloading)
+        {
+            RecoilWeight = 1.f;
+        }
+        else
+        {
+            RecoilWeight = 0.f;
+        }
+    }
+    else // not turning in place
+    {
+        if (bCrouching)
+        {
+            if (bReloading)
+            {
+                RecoilWeight = 1.f;
+            }
+            else
+            {
+                RecoilWeight = 0.1f;
+            }
+        }
+        else
+        {
+            if (bAiming || bReloading)
+            {
+                RecoilWeight = 1.f;
+            }
+            else
+            {
+                RecoilWeight = 0.5f;
+            }
+        }
+    }    
 }
 
 void UShooterAnimInstance::Lean(float DeltaTime)
