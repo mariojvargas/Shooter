@@ -25,12 +25,28 @@ protected:
 
 	virtual void SetItemProperties(EItemState State) override;
 
+UFUNCTION()
+	void OnAmmoSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent, 
+		AActor* OtherActor, 
+		UPrimitiveComponent* OtherComponent, 
+		int32 OtherBodyIndex, 
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
 	UStaticMeshComponent* AmmoMesh{ nullptr };
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo, meta = (AllowPrivateAccess = "true"))
 	EAmmoType AmmoType;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+	UTexture2D* AmmoIconTexture{ nullptr };
+
+	/** Overlap sphere for automatically-picking up ammo */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Ammo, meta = (AllowPrivateAccess = "true"))
+	class USphereComponent* AmmoCollisionSphere{ nullptr };
 
 public:
 	FORCEINLINE UStaticMeshComponent* GetAmmoMesh() const { return AmmoMesh; }

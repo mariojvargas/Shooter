@@ -406,13 +406,7 @@ void AShooterCharacter::SelectButtonPressed()
 {
 	if (TraceHitItem)
 	{
-		// TODO: Maybe an event is better?
 		TraceHitItem->StartItemCurve(this);
-
-		if (TraceHitItem->GetPickupSound())
-		{
-			UGameplayStatics::PlaySound2D(this, TraceHitItem->GetPickupSound());
-		}
 	}
 }
 
