@@ -63,7 +63,7 @@ protected:
 	void SetActiveStars();
 
 	/** Sets properties of item's components based on state */
-	void SetItemProperties(EItemState State);
+	virtual void SetItemProperties(EItemState State);
 
 	void ItemInterpTimerFinished();
 
@@ -172,10 +172,13 @@ public:
 		return EquipSound;
 	}
 
+	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
+	
 	void StartItemCurve(AShooterCharacter* OriginCharacter);
 
 protected:
-	FORCEINLINE UBoxComponent* GetCollisionBox() { return CollisionBox; }
+	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
 
-	FORCEINLINE USphereComponent* GetAreaSphere() { return AreaSphere; }
+	FORCEINLINE USphereComponent* GetAreaSphere() const { return AreaSphere; }
+
 };

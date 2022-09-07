@@ -14,6 +14,7 @@
 #include "Item.h"
 #include "Weapon.h"
 #include "Components/CapsuleComponent.h"
+#include "Ammo.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() : 
@@ -782,11 +783,40 @@ void AShooterCharacter::LoadPickupItem(AItem* Item)
 		UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
 	}
 
-	AWeapon* Weapon = Cast<AWeapon>(Item);
+	auto Weapon = Cast<AWeapon>(Item);
 	if (Weapon)
 	{
 		SwapWeapon(Weapon);
 	}
+
+	auto Ammo = Cast<AAmmo>(Item);
+	if (Ammo)
+	{
+		PickUpAmmo(Ammo);
+	}
+}
+
+void AShooterCharacter::PickUpAmmo(AAmmo* Ammo)
+{
+	if (!(Ammo && EquippedWeapon))
+	{
+		return;
+	}
+
+	if (AmmoMap.Find(Ammo->GetAmmoType()))
+	{
+		int32 AmmoCount{ AmmoMap[Ammo->GetAmmoType()] };
+		AmmoCount += Ammo->GetItemCount();
+		AmmoMap[Ammo->GetAmmoType()] = AmmoCount;
+	}
+
+	if (EquippedWeapon->GetAmmoType() == Ammo->GetAmmoType() 
+			&& EquippedWeapon->GetAmmo() == 0)
+	{
+		ReloadWeapon();
+	}
+
+	Ammo->Destroy();
 }
 
 void AShooterCharacter::InitializeAmmoMap()
