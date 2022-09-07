@@ -135,6 +135,10 @@ protected:
 	/** Interps capsule half-height when crouching or standing */
 	void InterpCapsuleHalfHeight(float DeltaTime);
 
+	void Aim();
+
+	void StopAiming();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -332,6 +336,8 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float CrouchingGroundFriction;
+
+	bool bAimingButtonPressed;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 

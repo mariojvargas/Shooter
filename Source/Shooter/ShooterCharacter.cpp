@@ -76,7 +76,9 @@ AShooterCharacter::AShooterCharacter() :
 	CrouchingCapsuleHalfHeight(44.f),
 
 	BaseGroundFriction(2.f),
-	CrouchingGroundFriction(100.f)
+	CrouchingGroundFriction(100.f),
+
+	bAimingButtonPressed(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -432,7 +434,13 @@ void AShooterCharacter::ReloadWeapon()
 
 	if (IsCarryingAmmo() && !EquippedWeapon->IsClipFull())
 	{
+		if (bAiming)
+		{
+			StopAiming();
+		}
+
 		CombatState = ECombatState::ECS_Reloading;
+
 		UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 		if (AnimInstance && ReloadAnimMontage)
 		{
@@ -476,12 +484,19 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 
 void AShooterCharacter::AimingButtonPressed()
 {
-	bAiming = true;
+	bAimingButtonPressed = true;
+
+	if (CombatState != ECombatState::ECS_Reloading)
+	{
+		Aim();
+	}
 }
 
 void AShooterCharacter::AimingButtonReleased()
 {
-	bAiming = false;
+	bAimingButtonPressed = false;
+
+	StopAiming();
 }
 
 
@@ -789,6 +804,11 @@ void AShooterCharacter::FinishReloading()
 {
 	CombatState = ECombatState::ECS_Ready;
 
+	if (bAimingButtonPressed)
+	{
+		Aim();
+	}
+
 	if (EquippedWeapon == nullptr)
 	{
 		return;
@@ -875,5 +895,22 @@ void AShooterCharacter::CrouchButtonPressed()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 		GetCharacterMovement()->GroundFriction = BaseGroundFriction;
+	}
+}
+
+void AShooterCharacter::Aim()
+{
+	bAiming = true;
+
+	GetCharacterMovement()->MaxWalkSpeed = CrouchMovementSpeed;
+}
+
+void AShooterCharacter::StopAiming()
+{
+	bAiming = false;
+
+	if (!bCrouching)
+	{
+		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 	}
 }
