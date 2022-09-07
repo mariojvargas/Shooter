@@ -31,7 +31,7 @@ public:
 private:
 	const float DEFAULT_BASE_TURN_RATE = 45.f;
 	const float DEFAULT_BASE_LOOK_UP_RATE = 45.f;
-	const float AIMING_ZOOM_FOV = 35.f;
+	const float AIMING_ZOOM_FOV = 25.f;
 	const float CAMERA_BOOM_ARM_LENGTH = 180.f;
 	const float CAMERA_ZOOM_INTERPOLATION_SPEED = 20.f;
 	const float MAX_LINE_TRACE_DISTANCE = 50000.f;
@@ -212,8 +212,10 @@ private:
 	UPROPERTY(VisibleAnywhere, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	bool bAiming;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	float CameraDefaultFieldOfView;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	float CameraZoomedFieldOfView;
 
 	float CameraCurrentFieldOfView;
