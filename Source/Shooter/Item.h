@@ -173,4 +173,9 @@ public:
 	}
 
 	void StartItemCurve(AShooterCharacter* OriginCharacter);
+
+protected:
+	FORCEINLINE UBoxComponent* GetCollisionBox() { return CollisionBox; }
+
+	FORCEINLINE USphereComponent* GetAreaSphere() { return AreaSphere; }
 };
