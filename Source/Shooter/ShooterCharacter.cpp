@@ -29,8 +29,8 @@ AShooterCharacter::AShooterCharacter() :
 	// Mouse sensitivity scale factors
 	MouseHipTurnRate(1.f),
 	MouseHipLookUpRate(1.f),
-	MouseAimingTurnRate(0.35f),
-	MouseAimingLookUpRate(0.35f),
+	MouseAimingTurnRate(0.6f),
+	MouseAimingLookUpRate(0.6f),
 
 	bAiming(false),
 	
@@ -86,7 +86,7 @@ AShooterCharacter::AShooterCharacter() :
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->TargetArmLength = CAMERA_BOOM_ARM_LENGTH;	// Follow character at this distance
 	CameraBoom->bUsePawnControlRotation = true;	// Rotate the spring arm based on the character controller
-	CameraBoom->SocketOffset = FVector(0.f, 50.f, 45.f);
+	CameraBoom->SocketOffset = FVector(0.f, 50.f, 70.f);
 
 	// Create follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("Follow Camera"));
