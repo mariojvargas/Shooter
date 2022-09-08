@@ -22,7 +22,11 @@ AItem::AItem() :
 	CameraTargetLocation(FVector(0.f)),
 	bInterping(false),
 	ZCurveTime(0.7f),
-	InterpInitialYawOffset(0.f)
+	InterpInitialYawOffset(0.f),
+
+    ItemType(EItemType::EIT_MAX),
+
+    InterpLocationIndex(0)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -226,7 +230,17 @@ void AItem::SetItemProperties(EItemState State)
 
 void AItem::StartItemCurve(AShooterCharacter* OriginCharacter)
 {
+    if (!OriginCharacter)
+    {
+        return;
+    }
+
 	Character = OriginCharacter;
+
+    // Get array index in InterpLocations with the lowest item count
+    InterpLocationIndex = Character->GetInterpLocationIndex();
+    // Add 1 to the item count for this interp location struct
+    Character->IncrementInterpLocationItemCount(InterpLocationIndex, 1);
 
 	if (GetPickupSound())
 	{
@@ -257,6 +271,9 @@ void AItem::ItemInterpTimerFinished()
 
 	if (Character)
 	{
+        // subtract 1 from the item count of the interp location struct
+        Character->IncrementInterpLocationItemCount(InterpLocationIndex, -1);
+
 		Character->LoadPickupItem(this);
 	}
 
@@ -279,8 +296,11 @@ void AItem::InterpolateItemLoad(float DeltaTime)
 	const float ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
 	const float CurveValue = ItemZCurve->GetFloatValue(ElapsedTime);
 
+    // Get the item's initial location when the curve started
 	FVector ItemLocation = ItemInterpStartLocation;
-	FVector CameraInterpLocation = Character->GetCameraInterpLocation();
+
+    // Get location in front of camera
+	FVector CameraInterpLocation{ GetInterpLocation() };
 
 	const FVector ItemToCameraInterpLocation{ 
 		FVector(0.f, 0.f, (CameraInterpLocation -  ItemLocation).Z) 
@@ -317,4 +337,24 @@ void AItem::InterpolateItemLoad(float DeltaTime)
 		const float ScaleCurveValue = ItemScaleCurve->GetFloatValue(ElapsedTime);
 		SetActorScale3D(FVector(ScaleCurveValue, ScaleCurveValue, ScaleCurveValue));
 	}
+}
+
+FVector AItem::GetInterpLocation()
+{
+    if (!Character)
+    {
+        return FVector(0.f);
+    }
+
+    switch (ItemType)
+    {
+        case EItemType::EIT_Ammo:
+            return Character->GetInterpLocation(InterpLocationIndex).SceneComponent->GetComponentLocation();
+
+        case EItemType::EIT_Weapon:
+            return Character->GetInterpLocation(0).SceneComponent->GetComponentLocation();
+            break;
+    }
+
+    return FVector();
 }

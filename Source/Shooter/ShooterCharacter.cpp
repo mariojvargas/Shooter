@@ -111,6 +111,27 @@ AShooterCharacter::AShooterCharacter() :
 
 	// Create Hand Scene Component. Don't attach since it will be handled during reloading
 	HandSceneComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Hand Scene Component"));
+
+    WeaponInterpComp = CreateDefaultSubobject<USceneComponent>(TEXT("WeaponInterpolationComponent"));
+    WeaponInterpComp->SetupAttachment(GetFollowCamera());
+
+    InterpComp1 = CreateDefaultSubobject<USceneComponent>(TEXT("InterpolationComponent1"));
+    InterpComp1->SetupAttachment(GetFollowCamera());
+    
+    InterpComp2 = CreateDefaultSubobject<USceneComponent>(TEXT("InterpolationComponent2"));
+    InterpComp2->SetupAttachment(GetFollowCamera());
+    
+    InterpComp3 = CreateDefaultSubobject<USceneComponent>(TEXT("InterpolationComponent3"));
+    InterpComp3->SetupAttachment(GetFollowCamera());
+    
+    InterpComp4 = CreateDefaultSubobject<USceneComponent>(TEXT("InterpolationComponent4"));
+    InterpComp4->SetupAttachment(GetFollowCamera());
+    
+    InterpComp5 = CreateDefaultSubobject<USceneComponent>(TEXT("InterpolationComponent5"));
+    InterpComp5->SetupAttachment(GetFollowCamera());
+    
+    InterpComp6 = CreateDefaultSubobject<USceneComponent>(TEXT("InterpolationComponent6"));
+    InterpComp6->SetupAttachment(GetFollowCamera());
 }
 
 // Called when the game starts or when spawned
@@ -129,6 +150,8 @@ void AShooterCharacter::BeginPlay()
 	InitializeAmmoMap();
 
 	GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
+
+    InitializeInterpLocations();
 }
 
 // Called every frame
@@ -754,16 +777,17 @@ void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
 	LastTracedPickupItem = nullptr;
 }
 
-FVector AShooterCharacter::GetCameraInterpLocation()
-{
-	const FVector CameraWorldLocation{ FollowCamera->GetComponentLocation() };
-	const FVector CameraForward{ FollowCamera->GetForwardVector() };
+// TODO: no longer needed. AItem already has GetInterpLocation()
+// FVector AShooterCharacter::GetCameraInterpLocation()
+// {
+// 	const FVector CameraWorldLocation{ FollowCamera->GetComponentLocation() };
+// 	const FVector CameraForward{ FollowCamera->GetForwardVector() };
 
-	// Desired = cameraWorldLocation + forward * A + Up * B;
-	return CameraWorldLocation 
-		+ CameraForward * CameraInterpDistance
-		+ FVector(0.f, 0.f, CameraInterpElevation);
-}
+// 	// Desired = cameraWorldLocation + forward * A + Up * B;
+// 	return CameraWorldLocation 
+// 		+ CameraForward * CameraInterpDistance
+// 		+ FVector(0.f, 0.f, CameraInterpElevation);
+// }
 
 void AShooterCharacter::LoadPickupItem(AItem* Item)
 {
@@ -937,4 +961,72 @@ void AShooterCharacter::StopAiming()
 	{
 		GetCharacterMovement()->MaxWalkSpeed = BaseMovementSpeed;
 	}
+}
+
+FInterpLocation AShooterCharacter::GetInterpLocation(int32 Index)
+{
+    if (Index <= InterpLocations.Num())
+    {
+        return InterpLocations[Index];
+    }
+
+    return FInterpLocation();
+}
+
+void AShooterCharacter::InitializeInterpLocations()
+{
+    FInterpLocation WeaponLocation{ WeaponInterpComp, 0 };
+    InterpLocations.Add(WeaponLocation);
+
+    FInterpLocation InterpLoc1{ InterpComp1, 0};
+    InterpLocations.Add(InterpLoc1);
+
+    FInterpLocation InterpLoc2{ InterpComp2, 0};
+    InterpLocations.Add(InterpLoc2);
+
+    FInterpLocation InterpLoc3{ InterpComp3, 0};
+    InterpLocations.Add(InterpLoc3);
+
+    FInterpLocation InterpLoc4{ InterpComp4, 0};
+    InterpLocations.Add(InterpLoc4);
+
+    FInterpLocation InterpLoc5{ InterpComp5, 0};
+    InterpLocations.Add(InterpLoc5);
+
+    FInterpLocation InterpLoc6{ InterpComp6, 0};
+    InterpLocations.Add(InterpLoc6);    
+}
+
+int32 AShooterCharacter::GetInterpLocationIndex()
+{
+    // Note: Zeroth element is the weapon interp location
+    // so we handle only elements 1 through InterpLoc"N"
+
+    int32 LowestIndex = 1;
+    int32 LowestCount = INT_MAX;
+
+    // Find the interp location that has the least number of items in it
+    for (int32 i = 1; i < InterpLocations.Num(); i++)
+    {
+        if (InterpLocations[i].ItemCount < LowestCount)
+        {
+            LowestIndex = i;
+            LowestCount = InterpLocations[i].ItemCount;
+        }
+    }
+
+    return LowestIndex;
+}
+
+void AShooterCharacter::IncrementInterpLocationItemCount(int32 Index, int32 Amount)
+{
+    if (Amount < -1 || Amount > 1)
+    {
+        return;
+    }
+
+    if (InterpLocations.Num() >= Index)
+    {
+        InterpLocations[Index].ItemCount += Amount;
+    }
 }

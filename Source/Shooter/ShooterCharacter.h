@@ -19,6 +19,20 @@ enum class ECombatState : uint8
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
+USTRUCT(BlueprintType)
+struct FInterpLocation
+{
+    GENERATED_BODY()
+
+    /** Scene component to use for its location for interping */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    USceneComponent* SceneComponent;
+
+    /** Number of items interping to/at this scene component location */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+    int32 ItemCount;
+};
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -141,12 +155,20 @@ protected:
 
 	void PickUpAmmo(class AAmmo* Ammo);
 
+    void InitializeInterpLocations();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+     /** Gets the index of the interp location that has the least amount of 
+     * items interping to it at any given point in time */
+    int32 GetInterpLocationIndex();
+
+    void IncrementInterpLocationItemCount(int32 Index, int32 Amount);
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"))
@@ -341,6 +363,30 @@ private:
 
 	bool bAimingButtonPressed;
 
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* WeaponInterpComp;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp1;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp2;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp3;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp4;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp5;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    USceneComponent* InterpComp6;
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+    TArray<FInterpLocation> InterpLocations;
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
 	{ 
@@ -375,10 +421,13 @@ public:
 		return bCrouching; 
 	}
 
+    FInterpLocation GetInterpLocation(int32 Index);
+
 	/** Adds given amount to current number of overlapped items */
 	void AddOverlappedItemCount(int32 Amount);
 
-	FVector GetCameraInterpLocation();
+    // TODO: No longer needed. AItem already has GetInterpLocation
+	// FVector GetCameraInterpLocation();
 
 	void LoadPickupItem(AItem* Item);
 };

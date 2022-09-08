@@ -14,6 +14,7 @@ enum class EItemRarity : uint8
 	EIR_Uncommon UMETA(DisplayName = "Uncommon"),
 	EIR_Rare UMETA(DisplayName = "Rare"),
 	EIR_Legendary UMETA(DisplayName = "Legendary"),
+
 	EIR_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
@@ -25,7 +26,17 @@ enum class EItemState : uint8
 	EIS_PickedUp UMETA(DisplayName = "PickedUp"),
 	EIS_Equipped UMETA(DisplayName = "Equipped"),
 	EIS_Falling UMETA(DisplayName = "Falling"),
-	EIS_Max UMETA(DisplayName = "DefaultMAX")
+
+	EIS_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+UENUM(BlueprintType)
+enum class EItemType : uint8
+{
+	EIT_Ammo UMETA(DisplayName = "Ammo"),
+	EIT_Weapon UMETA(DisplayName = "Weapon"),
+
+	EIT_MAX UMETA(DisplayName = "DefaultMAX")
 };
 
 UCLASS()
@@ -68,6 +79,9 @@ protected:
 	void ItemInterpTimerFinished();
 
 	void InterpolateItemLoad(float Deltatime);
+
+    /** Get interp location based on item type */
+    FVector GetInterpLocation();
 	
 public:	
 	// Called every frame
@@ -143,6 +157,13 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
 	USoundCue* EquipSound{ nullptr };
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+	EItemType ItemType;
+
+    /** Index of the interp location this item is interping to */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    int32 InterpLocationIndex;
 
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const 
