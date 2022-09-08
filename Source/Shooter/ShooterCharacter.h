@@ -387,6 +387,23 @@ private:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
     TArray<FInterpLocation> InterpLocations;
 
+    FTimerHandle PickupSoundTimer;
+    FTimerHandle EquipSoundTimer;
+
+    bool bShouldPlayPickupSound;
+    bool bShouldPlayEquipSound;
+
+    /** Time to wait before we can play another pickup sound */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+    float PickupSoundResetTime;
+
+    /** Time to wait before we can play another equip sound */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
+    float EquipSoundResetTime;
+
+    void ResetPickupSoundTimer();
+    void ResetEquipSoundTimer();
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
 	{ 
@@ -430,4 +447,11 @@ public:
 	// FVector GetCameraInterpLocation();
 
 	void LoadPickupItem(AItem* Item);
+
+    FORCEINLINE bool ShouldPlayPickupSound() const { return bShouldPlayPickupSound; }
+
+    FORCEINLINE bool ShouldPlayEquipSound() const { return bShouldPlayEquipSound; }
+
+    void StartPickupSoundTimer();
+    void StartEquipSoundTimer();
 };

@@ -82,10 +82,14 @@ protected:
 
     /** Get interp location based on item type */
     FVector GetInterpLocation();
+
+	void PlayPickupSound();
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void PlayEquipSound();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))

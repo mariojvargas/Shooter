@@ -79,7 +79,12 @@ AShooterCharacter::AShooterCharacter() :
 	BaseGroundFriction(2.f),
 	CrouchingGroundFriction(100.f),
 
-	bAimingButtonPressed(false)
+	bAimingButtonPressed(false),
+
+    bShouldPlayPickupSound(true),
+    bShouldPlayEquipSound(true),
+    PickupSoundResetTime(0.2f),
+    EquipSoundResetTime(0.2)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -796,10 +801,7 @@ void AShooterCharacter::LoadPickupItem(AItem* Item)
 		return;
 	}
 
-	if (Item->GetEquipSound())
-	{
-		UGameplayStatics::PlaySound2D(this, Item->GetEquipSound());
-	}
+	Item->PlayEquipSound();
 
 	auto Weapon = Cast<AWeapon>(Item);
 	if (Weapon)
@@ -1029,4 +1031,36 @@ void AShooterCharacter::IncrementInterpLocationItemCount(int32 Index, int32 Amou
     {
         InterpLocations[Index].ItemCount += Amount;
     }
+}
+
+ void AShooterCharacter::ResetPickupSoundTimer()
+ {
+    bShouldPlayPickupSound = true;
+ }
+
+void AShooterCharacter::ResetEquipSoundTimer()
+{
+    bShouldPlayEquipSound = true;
+}
+
+void AShooterCharacter::StartPickupSoundTimer()
+{
+    bShouldPlayPickupSound = false;
+    GetWorldTimerManager().SetTimer(
+        PickupSoundTimer, 
+        this, 
+        &AShooterCharacter::ResetPickupSoundTimer, 
+        PickupSoundResetTime
+    );
+}
+
+void AShooterCharacter::StartEquipSoundTimer()
+{
+    bShouldPlayEquipSound = false;
+    GetWorldTimerManager().SetTimer(
+        EquipSoundTimer,
+        this,
+        &AShooterCharacter::ResetEquipSoundTimer,
+        EquipSoundResetTime
+    );
 }
