@@ -67,6 +67,8 @@ void AItem::BeginPlay()
 	SetActiveStars();
 
 	SetItemProperties(ItemState);
+
+    InitializeCustomDepth();
 }
 
 void AItem::OnSphereOverlap(UPrimitiveComponent* OverlappedComponent, 
@@ -378,4 +380,19 @@ void AItem::PlayEquipSound()
 			UGameplayStatics::PlaySound2D(this, EquipSound);
 		}
 	}
+}
+
+void AItem::EnableCustomDepth()
+{
+    ItemMesh->SetRenderCustomDepth(true);
+}
+
+void AItem::DisableCustomDepth()
+{
+    ItemMesh->SetRenderCustomDepth(false);
+}
+
+void AItem::InitializeCustomDepth()
+{
+    DisableCustomDepth();
 }

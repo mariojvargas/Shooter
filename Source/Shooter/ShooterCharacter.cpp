@@ -681,7 +681,7 @@ void AShooterCharacter::TraceForOverlappingItems()
 		if (LastTracedPickupItem)
 		{
 			LastTracedPickupItem->GetPickupWidget()->SetVisibility(false);
-			LastTracedPickupItem = nullptr;
+            LastTracedPickupItem->DisableCustomDepth();
 		}
 
 		return;
@@ -699,11 +699,13 @@ void AShooterCharacter::TraceForOverlappingItems()
 	if (TraceHitItem && TraceHitItem->GetPickupWidget())
 	{
 		TraceHitItem->GetPickupWidget()->SetVisibility(true);
+        TraceHitItem->EnableCustomDepth();
 	}
 
 	if (LastTracedPickupItem && LastTracedPickupItem != TraceHitItem)
 	{
 		LastTracedPickupItem->GetPickupWidget()->SetVisibility(false);
+        LastTracedPickupItem->DisableCustomDepth();
 	}
 
 	LastTracedPickupItem = TraceHitItem;

@@ -84,12 +84,17 @@ protected:
     FVector GetInterpLocation();
 
 	void PlayPickupSound();
+  
+    virtual void InitializeCustomDepth();
 	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	void PlayEquipSound();
+
+    virtual void EnableCustomDepth();
+    virtual void DisableCustomDepth();
 
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))

@@ -20,6 +20,10 @@ public:
 
 	virtual void Tick(float DeltaTime) override;
 
+    virtual void EnableCustomDepth() override;
+
+    virtual void DisableCustomDepth() override;
+
 protected:
 	virtual void BeginPlay() override;
 
@@ -53,4 +57,3 @@ public:
 
 	FORCEINLINE EAmmoType GetAmmoType() const { return AmmoType; }
 };
-
