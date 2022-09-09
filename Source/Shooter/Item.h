@@ -192,6 +192,8 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     UMaterialInstance* MaterialInstance{ nullptr };
 
+    bool bCanChangeCustomDepth;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const 
 	{

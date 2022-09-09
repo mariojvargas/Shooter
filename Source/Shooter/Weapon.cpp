@@ -50,6 +50,8 @@ void AWeapon::ThrowWeapon()
         this, 
         &AWeapon::StopFalling, 
         ThrowWeaponTime);
+
+    EnableGlowMaterial();
 }
 
 void AWeapon::StopFalling()
@@ -103,4 +105,3 @@ bool AWeapon::IsClipFull() const
 { 
     return Ammo >= MagazineCapacity; 
 }
-
