@@ -26,7 +26,9 @@ AItem::AItem() :
 
     ItemType(EItemType::EIT_MAX),
 
-    InterpLocationIndex(0)
+    InterpLocationIndex(0),
+
+    MaterialIndex(0)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -278,6 +280,9 @@ void AItem::ItemInterpTimerFinished()
 
 	// Restore item's normal size
 	SetActorScale3D(FVector(1.f));
+
+    DisableGlowMaterial();
+    DisableCustomDepth();
 }
 
 void AItem::InterpolateItemLoad(float DeltaTime)
@@ -395,4 +400,31 @@ void AItem::DisableCustomDepth()
 void AItem::InitializeCustomDepth()
 {
     DisableCustomDepth();
+}
+
+void AItem::OnConstruction(const FTransform& Transform)
+{
+    if (MaterialInstance)
+    {
+        DynamicMaterialInstance = UMaterialInstanceDynamic::Create(MaterialInstance, this);
+        ItemMesh->SetMaterial(MaterialIndex, DynamicMaterialInstance);
+    }
+
+    EnableGlowMaterial();
+}
+
+void AItem::EnableGlowMaterial()
+{
+    if (DynamicMaterialInstance)
+    {
+        DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowBlendAlpha"), 0.f);
+    }
+}
+
+void AItem::DisableGlowMaterial()
+{
+    if (DynamicMaterialInstance)
+    {
+        DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowBlendAlpha"), 1.f);
+    }
 }
