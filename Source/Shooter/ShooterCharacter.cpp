@@ -151,6 +151,8 @@ void AShooterCharacter::BeginPlay()
 	}
 
 	EquipWeapon(SpawnDefaultWeapon());
+    EquippedWeapon->DisableCustomDepth();
+    EquippedWeapon->DisableGlowMaterial();
 
 	InitializeAmmoMap();
 
