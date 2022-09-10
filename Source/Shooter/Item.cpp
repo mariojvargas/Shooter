@@ -268,6 +268,8 @@ void AItem::StartItemCurve(AShooterCharacter* OriginCharacter)
 
 	SetItemState(EItemState::EIS_EquipInterpolating);
 
+    GetWorldTimerManager().ClearTimer(PulseTimer);
+
 	GetWorldTimerManager().SetTimer(
 		ItemInterpTimer, 
 		this, 
@@ -292,6 +294,8 @@ void AItem::ItemInterpTimerFinished()
         Character->IncrementInterpLocationItemCount(InterpLocationIndex, -1);
 
 		Character->LoadPickupItem(this);
+
+        SetItemState(EItemState::EIS_PickedUp);
 	}
 
 	// Restore item's normal size
@@ -469,19 +473,32 @@ void AItem::StartPulseTimer()
 
 void AItem::UpdatePulse()
 {
-    if (ItemState != EItemState::EIS_Pickup)
+    float ElapsedTime{  };
+    FVector CurveValue{};
+
+    switch (ItemState)
     {
-        return;
+		case EItemState::EIS_Pickup:
+			if (PulseCurve)
+			{
+				ElapsedTime = GetWorldTimerManager().GetTimerElapsed(PulseTimer);
+				CurveValue = PulseCurve->GetVectorValue(ElapsedTime);
+			}
+			break;
+
+		case EItemState::EIS_EquipInterpolating:
+			if (InterpPulseCurve)
+			{
+                ElapsedTime = GetWorldTimerManager().GetTimerElapsed(ItemInterpTimer);
+                CurveValue = InterpPulseCurve->GetVectorValue(ElapsedTime);
+			}
+			break;
     }
 
-    const float ElapsedTime{ GetWorldTimerManager().GetTimerElapsed(PulseTimer) };
-    if (PulseCurve)
+    if (DynamicMaterialInstance)
     {
-        const FVector CurveValue{ PulseCurve->GetVectorValue(ElapsedTime) };
-
         DynamicMaterialInstance->SetScalarParameterValue(TEXT("GlowAmount"), CurveValue.X * GlowAmount);
         DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelExponent"), CurveValue.Y * FresnelExponent);
         DynamicMaterialInstance->SetScalarParameterValue(TEXT("FresnelReflectFraction"), CurveValue.Z * FresnelReflectFraction);
-
     }
 }

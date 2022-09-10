@@ -204,6 +204,10 @@ private:
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     class UCurveVector* PulseCurve{ nullptr };
 
+    /**  */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    UCurveVector* InterpPulseCurve{ nullptr };
+
     FTimerHandle PulseTimer;
 
     /** Time for the PulseTimer */
