@@ -49,6 +49,7 @@ private:
 	const float CAMERA_BOOM_ARM_LENGTH = 180.f;
 	const float CAMERA_ZOOM_INTERPOLATION_SPEED = 20.f;
 	const float MAX_LINE_TRACE_DISTANCE = 50000.f;
+    const int32 INVENTORY_CAPACITY{ 6 };
 
 protected:
 	// Called when the game starts or when spawned
@@ -403,6 +404,9 @@ private:
 
     void ResetPickupSoundTimer();
     void ResetEquipSoundTimer();
+
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
+    TArray<AItem*> Inventory;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
