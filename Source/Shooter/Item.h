@@ -227,6 +227,10 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
     UTexture2D* IconBackground{ nullptr };
 
+    /** Icon for this item in the inventory */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
+    UTexture2D* ItemIcon{ nullptr };
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const 
 	{
