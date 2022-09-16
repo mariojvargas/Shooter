@@ -154,6 +154,7 @@ void AShooterCharacter::BeginPlay()
     EquippedWeapon->DisableCustomDepth();
     EquippedWeapon->DisableGlowMaterial();
     EquippedWeapon->SetSlotIndex(0);
+    EquippedWeapon->SetCharacter(this);
     Inventory.Add(EquippedWeapon);
 
 	InitializeAmmoMap();
@@ -450,7 +451,7 @@ void AShooterCharacter::SelectButtonPressed()
 
 	if (TraceHitItem)
 	{
-		TraceHitItem->StartItemCurve(this);
+		TraceHitItem->StartItemCurve(this, true);
         // Prevent spamming of item selection while it's interping
         TraceHitItem = nullptr;
 	}
@@ -1200,6 +1201,8 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
         AnimInstance->Montage_Play(EquipAnimMontage, 1.f);
         AnimInstance->Montage_JumpToSection(FName("Equip"));
     }
+
+    NewWeapon->PlayEquipSound(true);
 }
 
 void AShooterCharacter::FinishEquipping()

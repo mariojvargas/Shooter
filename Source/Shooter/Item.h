@@ -83,7 +83,7 @@ protected:
     /** Get interp location based on item type */
     FVector GetInterpLocation();
 
-	void PlayPickupSound();
+	void PlayPickupSound(bool bForcePlaySound = false);
   
     virtual void InitializeCustomDepth();
 
@@ -101,7 +101,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void PlayEquipSound();
+	void PlayEquipSound(bool bForcePlaySound = false);
 
     virtual void EnableCustomDepth();
     virtual void DisableCustomDepth();
@@ -274,8 +274,13 @@ public:
     { 
         SlotIndex = Value; 
     }
+
+    FORCEINLINE void SetCharacter(AShooterCharacter* ShooterCharacter) 
+    { 
+        Character = ShooterCharacter; 
+    }
 	
-	void StartItemCurve(AShooterCharacter* OriginCharacter);
+	void StartItemCurve(AShooterCharacter* OriginCharacter, bool bForcePlaySound = false);
 
 protected:
 	FORCEINLINE UBoxComponent* GetCollisionBox() const { return CollisionBox; }
