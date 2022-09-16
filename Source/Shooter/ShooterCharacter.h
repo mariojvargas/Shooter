@@ -115,7 +115,7 @@ protected:
 
 	AWeapon* SpawnDefaultWeapon();
 
-	void EquipWeapon(class AWeapon* WeaponToEquip);
+	void EquipWeapon(class AWeapon* WeaponToEquip, bool bSwapping = false);
 
 	void DropWeapon();
 
