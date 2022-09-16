@@ -443,6 +443,11 @@ void AShooterCharacter::ResetAutoFire()
 
 void AShooterCharacter::SelectButtonPressed()
 {
+    if (CombatState != ECombatState::ECS_Ready)
+    {
+        return;
+    }
+
 	if (TraceHitItem)
 	{
 		TraceHitItem->StartItemCurve(this);
@@ -1173,7 +1178,9 @@ void AShooterCharacter::FiveKeyPressed()
 
 void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex)
 {
-    if (CurrentItemIndex == NewItemIndex || NewItemIndex >= Inventory.Num())
+    if ((CurrentItemIndex == NewItemIndex) 
+        || (NewItemIndex >= Inventory.Num()) 
+        || (CombatState != ECombatState::ECS_Ready))
     {
         return;
     }
