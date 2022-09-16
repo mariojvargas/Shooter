@@ -153,6 +153,7 @@ void AShooterCharacter::BeginPlay()
 	EquipWeapon(SpawnDefaultWeapon());
     EquippedWeapon->DisableCustomDepth();
     EquippedWeapon->DisableGlowMaterial();
+    EquippedWeapon->SetSlotIndex(0);
     Inventory.Add(EquippedWeapon);
 
 	InitializeAmmoMap();
@@ -280,6 +281,13 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 	PlayerInputComponent->BindAction("ReloadButton", EInputEvent::IE_Pressed, this, &AShooterCharacter::ReloadButtonPressed);
 
 	PlayerInputComponent->BindAction("Crouch", EInputEvent::IE_Pressed, this, &AShooterCharacter::CrouchButtonPressed);
+
+	PlayerInputComponent->BindAction("FKey", EInputEvent::IE_Pressed, this, &AShooterCharacter::FKeyPressed);
+	PlayerInputComponent->BindAction("1Key", EInputEvent::IE_Pressed, this, &AShooterCharacter::OneKeyPressed);
+	PlayerInputComponent->BindAction("2Key", EInputEvent::IE_Pressed, this, &AShooterCharacter::TwoKeyPressed);
+	PlayerInputComponent->BindAction("3Key", EInputEvent::IE_Pressed, this, &AShooterCharacter::ThreeKeyPressed);
+	PlayerInputComponent->BindAction("4Key", EInputEvent::IE_Pressed, this, &AShooterCharacter::FourKeyPressed);
+	PlayerInputComponent->BindAction("5Key", EInputEvent::IE_Pressed, this, &AShooterCharacter::FiveKeyPressed);
 }
 
 void AShooterCharacter::TurnWithMouse(float Value)
@@ -438,6 +446,8 @@ void AShooterCharacter::SelectButtonPressed()
 	if (TraceHitItem)
 	{
 		TraceHitItem->StartItemCurve(this);
+        // Prevent spamming of item selection while it's interping
+        TraceHitItem = nullptr;
 	}
 }
 
@@ -699,6 +709,12 @@ void AShooterCharacter::TraceForOverlappingItems()
 
 	// TODO: Refactor into maybe HitItem->ShowStatsHud()/HideStatsHud() 
 	TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+    if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterpolating)
+    {
+        // No need to track hit item if interping so we can prevent spamming
+        TraceHitItem = nullptr;
+    }
+
 	if (TraceHitItem && TraceHitItem->GetPickupWidget())
 	{
 		TraceHitItem->GetPickupWidget()->SetVisibility(true);
@@ -761,8 +777,18 @@ void AShooterCharacter::EquipWeapon(AWeapon* WeaponToEquip)
 		HandWeaponSocket->AttachActor(WeaponToEquip, GetMesh());
 	}
 
-	EquippedWeapon = WeaponToEquip;
+    if (EquippedWeapon == nullptr)
+    {
+        // -1 == no equipped weapon yet. No need to reverse icon animation
+        EquipItemDelegate.Broadcast(-1, WeaponToEquip->GetSlotIndex());
+    }
+    else
+    {
+        EquipItemDelegate.Broadcast(EquippedWeapon->GetSlotIndex(), WeaponToEquip->GetSlotIndex());
+    }
 
+    // Set equipped weapon to newly spawned weapon
+	EquippedWeapon = WeaponToEquip;
 	EquippedWeapon->SetItemState(EItemState::EIS_Equipped);
 }
 
@@ -775,15 +801,20 @@ void AShooterCharacter::DropWeapon()
 
 		EquippedWeapon->SetItemState(EItemState::EIS_Falling);
 		EquippedWeapon->ThrowWeapon();
-
-		EquippedWeapon = nullptr;
 	}
 }
 
 void AShooterCharacter::SwapWeapon(AWeapon* WeaponToSwap)
 {
+    if (Inventory.Num() - 1 >= EquippedWeapon->GetSlotIndex())
+    {
+        Inventory[EquippedWeapon->GetSlotIndex()] = WeaponToSwap;
+        WeaponToSwap->SetSlotIndex(EquippedWeapon->GetSlotIndex());
+    }
+
 	DropWeapon();
 	EquipWeapon(WeaponToSwap);
+    TraceHitItem = nullptr;
 	LastTracedPickupItem = nullptr;
 }
 
@@ -813,7 +844,9 @@ void AShooterCharacter::LoadPickupItem(AItem* Item)
 	{
         if (Inventory.Num() < INVENTORY_CAPACITY)
         {
+            Weapon->SetSlotIndex(Inventory.Num());
             Inventory.Add(Weapon);
+            Weapon->SetItemState(EItemState::EIS_PickedUp);
         }
         else
         {
@@ -1076,4 +1109,79 @@ void AShooterCharacter::StartEquipSoundTimer()
         &AShooterCharacter::ResetEquipSoundTimer,
         EquipSoundResetTime
     );
+}
+
+void AShooterCharacter::FKeyPressed()
+{
+    if (EquippedWeapon->GetSlotIndex() == 0)
+    {
+        return;
+    }
+
+    ExchangeInventoryItems(EquippedWeapon->GetSlotIndex(), 0);
+}
+
+void AShooterCharacter::OneKeyPressed()
+{
+    if (EquippedWeapon->GetSlotIndex() == 1)
+    {
+        return;
+    }
+
+    ExchangeInventoryItems(EquippedWeapon->GetSlotIndex(), 1);
+}
+
+void AShooterCharacter::TwoKeyPressed()
+{
+    if (EquippedWeapon->GetSlotIndex() == 2)
+    {
+        return;
+    }
+
+    ExchangeInventoryItems(EquippedWeapon->GetSlotIndex(), 2);
+}
+
+void AShooterCharacter::ThreeKeyPressed()
+{
+    if (EquippedWeapon->GetSlotIndex() == 3)
+    {
+        return;
+    }
+
+    ExchangeInventoryItems(EquippedWeapon->GetSlotIndex(), 3);
+}
+
+void AShooterCharacter::FourKeyPressed()
+{
+    if (EquippedWeapon->GetSlotIndex() == 4)
+    {
+        return;
+    }
+
+    ExchangeInventoryItems(EquippedWeapon->GetSlotIndex(), 4);
+}
+
+void AShooterCharacter::FiveKeyPressed()
+{
+    if (EquippedWeapon->GetSlotIndex() == 5)
+    {
+        return;
+    }
+
+    ExchangeInventoryItems(EquippedWeapon->GetSlotIndex(), 5);
+}
+
+void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex)
+{
+    if (CurrentItemIndex == NewItemIndex || NewItemIndex >= Inventory.Num())
+    {
+        return;
+    }
+
+    auto OldEquippedWeapon = EquippedWeapon;
+    auto NewWeapon = Cast<AWeapon>(Inventory[NewItemIndex]);
+    EquipWeapon(NewWeapon);
+
+    OldEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
+    NewWeapon->SetItemState(EItemState::EIS_Equipped);
 }

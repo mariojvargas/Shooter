@@ -234,6 +234,10 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory", meta = (AllowPrivateAccess = "true"))
     UTexture2D* QuantityIcon{ nullptr };
 
+    /** Slot in the inventory */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    int32 SlotIndex;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const 
 	{
@@ -263,6 +267,13 @@ public:
 	}
 
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
+
+    FORCEINLINE int32 GetSlotIndex() const { return SlotIndex; }
+
+    FORCEINLINE void SetSlotIndex(int32 Value) 
+    { 
+        SlotIndex = Value; 
+    }
 	
 	void StartItemCurve(AShooterCharacter* OriginCharacter);
 

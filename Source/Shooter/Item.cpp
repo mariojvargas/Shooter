@@ -37,7 +37,9 @@ AItem::AItem() :
     PulseCurveTime(5.f),
     GlowAmount(150.f),
     FresnelExponent(3.f),
-    FresnelReflectFraction(4.f)
+    FresnelReflectFraction(4.f),
+
+    SlotIndex(0)
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -220,6 +222,7 @@ void AItem::SetItemProperties(EItemState State)
 			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			ItemMesh->SetCollisionResponseToChannel(ECollisionChannel::ECC_WorldStatic, ECollisionResponse::ECR_Block);
 			ItemMesh->SetEnableGravity(true);
+            ItemMesh->SetVisibility(true);
 
 			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -243,6 +246,23 @@ void AItem::SetItemProperties(EItemState State)
 			CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
 			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			break;
+
+        case EItemState::EIS_PickedUp:
+            PickupWidget->SetVisibility(false);
+
+			ItemMesh->SetSimulatePhysics(false);
+             // Disable visibility: This item will exist but it won't be visible or interact with anything
+			ItemMesh->SetVisibility(false);
+			ItemMesh->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			ItemMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			ItemMesh->SetEnableGravity(false);
+
+			AreaSphere->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			AreaSphere->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+			CollisionBox->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+			CollisionBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+            break;
 	}
 }
 
@@ -294,8 +314,6 @@ void AItem::ItemInterpTimerFinished()
         Character->IncrementInterpLocationItemCount(InterpLocationIndex, -1);
 
 		Character->LoadPickupItem(this);
-
-        SetItemState(EItemState::EIS_PickedUp);
 	}
 
 	// Restore item's normal size

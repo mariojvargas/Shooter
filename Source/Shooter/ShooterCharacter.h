@@ -33,6 +33,8 @@ struct FInterpLocation
     int32 ItemCount;
 };
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FEquipItemDelegate, int32, CurrentSlotIndex, int32, NewSlotIndex);
+
 UCLASS()
 class SHOOTER_API AShooterCharacter : public ACharacter
 {
@@ -157,6 +159,14 @@ protected:
 	void PickUpAmmo(class AAmmo* Ammo);
 
     void InitializeInterpLocations();
+
+    void FKeyPressed();
+    void OneKeyPressed();
+    void TwoKeyPressed();
+    void ThreeKeyPressed();
+    void FourKeyPressed();
+    void FiveKeyPressed();
+    void ExchangeInventoryItems(int32 CurrentItemIndex, int32 NewItemIndex);
 
 public:	
 	// Called every frame
@@ -407,6 +417,10 @@ private:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
     TArray<AItem*> Inventory;
+
+    /** Delegate for sending slot information to inventory bar when equipping */
+    UPROPERTY(BlueprintAssignable, Category = Delegates, meta = (AllowPrivateAccess = "true"))
+    FEquipItemDelegate EquipItemDelegate;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
