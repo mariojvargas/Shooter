@@ -238,6 +238,9 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
     int32 SlotIndex;
 
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Item Properties", meta = (AllowPrivateAccess = "true"))
+    bool bCharacterInventoryFull;
+
 public:
 	FORCEINLINE UWidgetComponent* GetPickupWidget() const 
 	{
@@ -278,6 +281,11 @@ public:
     FORCEINLINE void SetCharacter(AShooterCharacter* ShooterCharacter) 
     { 
         Character = ShooterCharacter; 
+    }
+
+    FORCEINLINE void SetCharacterInventoryFull(bool bFull)
+    {
+        bCharacterInventoryFull = bFull;
     }
 	
 	void StartItemCurve(AShooterCharacter* OriginCharacter, bool bForcePlaySound = false);

@@ -725,6 +725,8 @@ void AShooterCharacter::TraceForOverlappingItems()
 	{
 		TraceHitItem->GetPickupWidget()->SetVisibility(true);
         TraceHitItem->EnableCustomDepth();
+
+        TraceHitItem->SetCharacterInventoryFull(Inventory.Num() >= INVENTORY_CAPACITY);
 	}
 
 	if (LastTracedPickupItem && LastTracedPickupItem != TraceHitItem)
