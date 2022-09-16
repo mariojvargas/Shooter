@@ -1191,4 +1191,18 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
 
     OldEquippedWeapon->SetItemState(EItemState::EIS_PickedUp);
     NewWeapon->SetItemState(EItemState::EIS_Equipped);
+
+    CombatState = ECombatState::ECS_Equipping;
+    
+    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    if (AnimInstance && EquipAnimMontage)
+    {
+        AnimInstance->Montage_Play(EquipAnimMontage, 1.f);
+        AnimInstance->Montage_JumpToSection(FName("Equip"));
+    }
+}
+
+void AShooterCharacter::FinishEquipping()
+{
+    CombatState = ECombatState::ECS_Ready;
 }

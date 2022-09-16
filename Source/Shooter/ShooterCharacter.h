@@ -15,6 +15,7 @@ enum class ECombatState : uint8
 	ECS_Ready	 UMETA(DisplayName = "Ready"),
 	ECS_FiringInProgress UMETA(DisplayName = "FiringInProgress"),
 	ECS_Reloading UMETA(DisplayName = "Reloading"),
+    ECS_Equipping UMETA(DisplayName = "Equipping"),
 
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -282,7 +283,6 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Crosshairs, meta = (AllowPrivateAccess = "true"))
 	float CrosshairShootingFactor;
 
-
 	/** Left mouse button or gamepad right-trigger pressed */
 	bool bFireButtonPressed;
 
@@ -318,8 +318,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* ReloadAnimMontage{ nullptr };
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	UAnimMontage* EquipAnimMontage{ nullptr };
+
 	UFUNCTION(BlueprintCallable)
 	void FinishReloading();
+
+    UFUNCTION(BlueprintCallable)
+	void FinishEquipping();
 
 	/** Distance outward from the camera for the interp destination */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Items, meta = (AllowPrivateAccess = "true"))
