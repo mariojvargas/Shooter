@@ -84,7 +84,9 @@ AShooterCharacter::AShooterCharacter() :
     bShouldPlayPickupSound(true),
     bShouldPlayEquipSound(true),
     PickupSoundResetTime(0.2f),
-    EquipSoundResetTime(0.2)
+    EquipSoundResetTime(0.2),
+
+    HighlightedSlot(-1)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -713,8 +715,24 @@ void AShooterCharacter::TraceForOverlappingItems()
 		return;
 	}
 
-	// TODO: Refactor into maybe HitItem->ShowStatsHud()/HideStatsHud() 
 	TraceHitItem = Cast<AItem>(ItemTraceResult.GetActor());
+
+    const auto TraceHitWeapon = Cast<AWeapon>(TraceHitItem);
+    if (TraceHitWeapon)
+    {
+        if (HighlightedSlot == -1)
+        {
+            HighlightInventorySlot();
+        }
+    }
+    else
+    {
+        if (HighlightedSlot != -1)
+        {
+            UnhighlightInventorySlot();
+        }
+    }
+
     if (TraceHitItem && TraceHitItem->GetItemState() == EItemState::EIS_EquipInterpolating)
     {
         // No need to track hit item if interping so we can prevent spamming
@@ -1210,4 +1228,35 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
 void AShooterCharacter::FinishEquipping()
 {
     CombatState = ECombatState::ECS_Ready;
+}
+
+int32 AShooterCharacter::GetEmptyInventorySlot()
+{
+    for (int32 i = 0; i < Inventory.Num(); i++)
+    {
+        if (Inventory[i] == nullptr)
+        {
+            return i;
+        }
+    }
+
+    if (Inventory.Num() < INVENTORY_CAPACITY)
+    {
+        return Inventory.Num();
+    }
+
+    return -1;
+}
+
+void AShooterCharacter::HighlightInventorySlot()
+{
+    const int32 EmptySlotIndex{ GetEmptyInventorySlot() };
+    HighlightIconDelegate.Broadcast(EmptySlotIndex, true);
+    HighlightedSlot = EmptySlotIndex;
+}
+
+void AShooterCharacter::UnhighlightInventorySlot()
+{
+    HighlightIconDelegate.Broadcast(HighlightedSlot, false);
+    HighlightedSlot = -1;
 }

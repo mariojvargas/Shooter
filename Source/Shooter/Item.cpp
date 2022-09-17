@@ -121,6 +121,7 @@ void AItem::OnSphereEndOverlap(UPrimitiveComponent* OverlappedComponent,
 	if (ShooterCharacter)
 	{
 		ShooterCharacter->AddOverlappedItemCount(-1);
+        ShooterCharacter->UnhighlightInventorySlot();
 	}
 }
 
@@ -316,6 +317,8 @@ void AItem::ItemInterpTimerFinished()
         Character->IncrementInterpLocationItemCount(InterpLocationIndex, -1);
 
 		Character->LoadPickupItem(this);
+
+        Character->UnhighlightInventorySlot();
 	}
 
 	// Restore item's normal size
