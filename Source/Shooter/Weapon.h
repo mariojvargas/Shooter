@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Item.h"
 #include "AmmoType.h"
+#include "Engine/DataTable.h"
 #include "Weapon.generated.h"
 
 UENUM(BlueprintType)
@@ -14,6 +15,39 @@ enum class EWeaponType : uint8
 	EWT_AssaultRifle UMETA(DisplayName = "AssaultRifle"),
 
 	EWT_MAX UMETA(DisplayName = "DefaultMAX")
+};
+
+USTRUCT(BlueprintType)
+struct FWeaponDataTable : public FTableRowBase
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    EAmmoType AmmoType;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 WeaponAmmo;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 MagazineCapacity;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class USoundCue* PickupSound{ nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class USoundCue* EquipSound{ nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    USkeletalMesh* ItemMesh{ nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FString ItemName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* InventoryIcon{ nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UTexture2D* AmmoIcon{ nullptr };
 };
 
 /**
@@ -41,6 +75,8 @@ public:
 
 protected:
 	void StopFalling();
+
+    virtual void OnConstruction(const FTransform& Transform) override;
 
 private:
 	FTimerHandle ThrowWeaponTimer;
@@ -72,6 +108,10 @@ private:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Weapon Properties", meta = (AllowPrivateAccess = "true"))
 	FName ClipBoneName;
+
+    /** Data table for weapon properties */
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+    UDataTable* WeaponDataTable{ nullptr };
 
 public:
 	FORCEINLINE bool IsFalling() const

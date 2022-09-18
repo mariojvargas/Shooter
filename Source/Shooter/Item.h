@@ -308,10 +308,20 @@ public:
 		return PickupSound;
 	}
 
+    FORCEINLINE void SetPickupSound(USoundCue* Sound)
+    {
+        PickupSound = Sound;
+    }
+
 	FORCEINLINE USoundCue* GetEquipSound() const
 	{
 		return EquipSound;
 	}
+
+    FORCEINLINE void SetEquipSound(USoundCue* Sound)
+    {
+        EquipSound = Sound;
+    }
 
 	FORCEINLINE int32 GetItemCount() const { return ItemCount; }
 
@@ -332,6 +342,21 @@ public:
         bCharacterInventoryFull = bFull;
     }
 	
+    FORCEINLINE void SetItemName(FString Value)
+    {
+        ItemName = Value;
+    }
+
+    FORCEINLINE void SetItemIcon(UTexture2D* Icon)
+    {
+        ItemIcon = Icon;
+    }
+
+    FORCEINLINE void SetQuantityIcon(UTexture2D* Icon)
+    {
+        QuantityIcon = Icon;
+    }
+
 	void StartItemCurve(AShooterCharacter* OriginCharacter, bool bForcePlaySound = false);
 
 protected:
