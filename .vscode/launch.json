@@ -4,7 +4,7 @@
 		{
 			"name": "Launch Shooter (Debug)",
 			"request": "launch",
-			"program": "D:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-Debug.exe",
+			"program": "E:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-Debug.exe",
 			"preLaunchTask": "Shooter Win64 Debug Build",
 			"args": [
 			],
@@ -20,7 +20,7 @@
 		{
 			"name": "Launch Shooter (DebugGame)",
 			"request": "launch",
-			"program": "D:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-DebugGame.exe",
+			"program": "E:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-DebugGame.exe",
 			"preLaunchTask": "Shooter Win64 DebugGame Build",
 			"args": [
 			],
@@ -36,7 +36,7 @@
 		{
 			"name": "Launch Shooter (Development)",
 			"request": "launch",
-			"program": "D:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame.exe",
+			"program": "E:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame.exe",
 			"preLaunchTask": "Shooter Win64 Development Build",
 			"args": [
 			],
@@ -52,7 +52,7 @@
 		{
 			"name": "Launch Shooter (Test)",
 			"request": "launch",
-			"program": "D:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-Test.exe",
+			"program": "E:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-Test.exe",
 			"preLaunchTask": "Shooter Win64 Test Build",
 			"args": [
 			],
@@ -68,7 +68,7 @@
 		{
 			"name": "Launch Shooter (Shipping)",
 			"request": "launch",
-			"program": "D:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-Shipping.exe",
+			"program": "E:\\Unreal Projects\\Shooter\\Binaries\\Win64\\UnrealGame-Win64-Shipping.exe",
 			"preLaunchTask": "Shooter Win64 Shipping Build",
 			"args": [
 			],
@@ -87,7 +87,7 @@
 			"program": "D:\\Epic Games\\UE_5.0\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-Debug.exe",
 			"preLaunchTask": "ShooterEditor Win64 Debug Build",
 			"args": [
-				"D:\\Unreal Projects\\Shooter\\Shooter.uproject"
+				"E:\\Unreal Projects\\Shooter\\Shooter.uproject"
 			],
 			"cwd": "D:\\Epic Games\\UE_5.0",
 			"stopAtEntry": false,
@@ -104,7 +104,7 @@
 			"program": "D:\\Epic Games\\UE_5.0\\Engine\\Binaries\\Win64\\UnrealEditor-Win64-DebugGame.exe",
 			"preLaunchTask": "ShooterEditor Win64 DebugGame Build",
 			"args": [
-				"D:\\Unreal Projects\\Shooter\\Shooter.uproject"
+				"E:\\Unreal Projects\\Shooter\\Shooter.uproject"
 			],
 			"cwd": "D:\\Epic Games\\UE_5.0",
 			"stopAtEntry": false,
@@ -121,7 +121,7 @@
 			"program": "D:\\Epic Games\\UE_5.0\\Engine\\Binaries\\Win64\\UnrealEditor.exe",
 			"preLaunchTask": "ShooterEditor Win64 Development Build",
 			"args": [
-				"D:\\Unreal Projects\\Shooter\\Shooter.uproject"
+				"E:\\Unreal Projects\\Shooter\\Shooter.uproject"
 			],
 			"cwd": "D:\\Epic Games\\UE_5.0",
 			"stopAtEntry": false,
@@ -140,7 +140,7 @@
 			"args": [
 				"-projectfiles",
 				"-vscode",
-				"-project=D:\\Unreal Projects\\Shooter\\Shooter.uproject",
+				"-project=E:\\Unreal Projects\\Shooter\\Shooter.uproject",
 				"-game",
 				"-engine"
 			],

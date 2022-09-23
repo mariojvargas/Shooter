@@ -3,14 +3,14 @@
         {
             "name": "ShooterEditor Editor Win64 Development (Shooter)",
             "intelliSenseMode": "msvc-x64",
-            "compileCommands": "D:\\Unreal Projects\\Shooter\\.vscode\\compileCommands_Shooter.json",
+            "compileCommands": "E:\\Unreal Projects\\Shooter\\.vscode\\compileCommands_Shooter.json",
             "cStandard": "c17",
             "cppStandard": "c++17"
         },
         {
             "name": "Win32",
             "intelliSenseMode": "msvc-x64",
-            "compileCommands": "D:\\Unreal Projects\\Shooter\\.vscode\\compileCommands_Default.json",
+            "compileCommands": "E:\\Unreal Projects\\Shooter\\.vscode\\compileCommands_Default.json",
             "cStandard": "c17",
             "cppStandard": "c++17"
         }
