@@ -48,6 +48,12 @@ struct FWeaponDataTable : public FTableRowBase
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UTexture2D* AmmoIcon{ nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UMaterialInstance* MaterialInstance{ nullptr };
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int32 MaterialIndex;
 };
 
 /**
@@ -112,6 +118,8 @@ private:
     /** Data table for weapon properties */
     UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
     UDataTable* WeaponDataTable{ nullptr };
+
+    int32 PreviousMaterialIndex;
 
 public:
 	FORCEINLINE bool IsFalling() const

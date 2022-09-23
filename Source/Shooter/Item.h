@@ -357,6 +357,41 @@ public:
         QuantityIcon = Icon;
     }
 
+    FORCEINLINE UMaterialInstance* GetMaterialInstance() const
+    {
+        return MaterialInstance;
+    }
+
+    FORCEINLINE void SetMaterialInstance(UMaterialInstance* Material)
+    {
+        MaterialInstance = Material;
+    }
+
+    FORCEINLINE UMaterialInstanceDynamic* GetDynamicMaterialInstance() const
+    {
+        return DynamicMaterialInstance;
+    }
+
+    FORCEINLINE void SetDynamicMaterialInstance(UMaterialInstanceDynamic* DynamicMaterial)
+    {
+        DynamicMaterialInstance = DynamicMaterial;
+    }
+
+    FORCEINLINE FLinearColor GetGlowColor() const 
+    { 
+        return GlowColor; 
+    }
+
+    FORCEINLINE int32 GetMaterialIndex() const
+    {
+        return MaterialIndex;
+    }
+
+    FORCEINLINE void SetMaterialIndex(int32 Value)
+    {
+        MaterialIndex = Value;
+    }
+
 	void StartItemCurve(AShooterCharacter* OriginCharacter, bool bForcePlaySound = false);
 
 protected:
