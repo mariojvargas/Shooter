@@ -478,6 +478,11 @@ public:
 		return bCrouching; 
 	}
 
+    FORCEINLINE AWeapon* GetEquippedWeapon() const
+    {
+        return EquippedWeapon;
+    }
+
     FInterpLocation GetInterpLocation(int32 Index);
 
 	/** Adds given amount to current number of overlapped items */
