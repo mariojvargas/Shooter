@@ -238,14 +238,6 @@ private:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera", meta = (AllowPrivateAccess = "true"), meta = (ClampMin = "0.1", ClampMax = "1.0",  UIMin = "0.1", UIMax = "1.0"))
 	float MouseAimingLookUpRate;
 
-	/** Gunshot sound cue */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
-	class USoundCue* FireSound{ nullptr };
-
-	/** Firing flash spawned at BarrelSocket of weapon */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
-	class UParticleSystem* MuzzleFlash{ nullptr };
-
 	/** Particles spawned upon bullet impact */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat", meta = (AllowPrivateAccess = "true"))
 	UParticleSystem* ImpactParticles{ nullptr };
@@ -294,8 +286,6 @@ private:
 
 	/** Left mouse button or gamepad right-trigger pressed */
 	bool bFireButtonPressed;
-
-	float AutomaticFireRate;
 
 	/** Timer between gunshots */
 	FTimerHandle AutoFireTimer;

@@ -49,10 +49,7 @@ AShooterCharacter::AShooterCharacter() :
 	CrosshairShootingFactor(0.f),
 
 	// Automatic gunfire configuration
-	// NOTE: Fire rate must be higher than crosshair 
-	//       interpolation speed (ShootTimeDurationSeconds)
 	bFireButtonPressed(false),
-	AutomaticFireRate(0.1f),
 
 	// Item tracing
 	bShouldTraceForOverlappingItems(false),
@@ -359,9 +356,9 @@ void AShooterCharacter::FireWeapon()
 
 void AShooterCharacter::PlayFireSound()
 {
-	if (FireSound)
+	if (EquippedWeapon->GetFireSound())
 	{
-		UGameplayStatics::PlaySound2D(this, FireSound);
+		UGameplayStatics::PlaySound2D(this, EquippedWeapon->GetFireSound());
 	}
 }
 
@@ -373,9 +370,12 @@ void AShooterCharacter::SendBullet()
 		return;
 	}
 
-	if (MuzzleFlash)
+	if (EquippedWeapon->GetMuzzleFlash())
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), MuzzleFlash, BarrelSocketTransform);
+		UGameplayStatics::SpawnEmitterAtLocation(
+            GetWorld(), 
+            EquippedWeapon->GetMuzzleFlash(), 
+            BarrelSocketTransform);
 	}
 
 	FVector BeamEndLocation;
@@ -417,14 +417,19 @@ void AShooterCharacter::PlayGunFireMontage()
 
 void AShooterCharacter::StartFireTimer()
 {
+    if (!EquippedWeapon)
+    {
+        return;
+    }
+
 	CombatState = ECombatState::ECS_FiringInProgress;
 
 	GetWorldTimerManager().SetTimer(
 		AutoFireTimer,
 		this,
 		&AShooterCharacter::ResetAutoFire,
-		AutomaticFireRate
-	);
+		EquippedWeapon->GetAutoFireRate()
+    );
 }
 
 void AShooterCharacter::ResetAutoFire()
