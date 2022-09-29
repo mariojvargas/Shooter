@@ -79,6 +79,9 @@ struct FWeaponDataTable : public FTableRowBase
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     USoundCue* FireSound;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FName BoneToHide;
 };
 
 /**
@@ -108,6 +111,8 @@ protected:
 	void StopFalling();
 
     virtual void OnConstruction(const FTransform& Transform) override;
+
+    virtual void BeginPlay() override;
 
 private:
 	FTimerHandle ThrowWeaponTimer;
@@ -173,6 +178,10 @@ private:
     /** Sound played when the weapon is fired */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
     USoundCue* FireSound;
+
+    /** Name of the bone to hide on the weapon mesh */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
+    FName BoneToHide;
 
 public:
 	FORCEINLINE bool IsFalling() const
