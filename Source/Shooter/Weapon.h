@@ -114,6 +114,10 @@ protected:
 
     virtual void BeginPlay() override;
 
+    void FinishMovingSlide();
+
+    void UpdateSlideDisplacement();
+
 private:
 	FTimerHandle ThrowWeaponTimer;
 	float ThrowWeaponTime;
@@ -183,6 +187,36 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = DataTable, meta = (AllowPrivateAccess = "true"))
     FName BoneToHide;
 
+    /** Amount that pistol slide is pushed back during pistol fire */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float SlideDisplacement;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    UCurveFloat* SlideDisplacementCurve;
+
+    /** Timer handle for updating slide displacement */
+    FTimerHandle SlideTimer;
+
+    /** Time for displacing the slide during pistol fire */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float SlideDisplacementTime;
+
+    /** True when moving pistol slide */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    bool bMovingSlide;
+
+    /** Max distance for the slide on the pistol */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float MaxSlideDisplacement;
+
+    /** The amount that pistol will rotate during pistol fire */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float RecoilRotation;
+
+    /** Max rotation for pistol rotation */
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Pistol, meta = (AllowPrivateAccess = "true"))
+    float MaxRecoilRotation;
+
 public:
 	FORCEINLINE bool IsFalling() const
 	{
@@ -218,4 +252,6 @@ public:
     FORCEINLINE UParticleSystem* GetMuzzleFlash() const { return MuzzleFlash; }
 
     FORCEINLINE USoundCue* GetFireSound() const { return FireSound; }
+
+    void StartSlideTimer();
 };
