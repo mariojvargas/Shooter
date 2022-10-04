@@ -441,9 +441,14 @@ void AShooterCharacter::ResetAutoFire()
 {
 	CombatState = ECombatState::ECS_Ready;
 
+    if (!EquippedWeapon)
+    {
+        return;
+    }
+    
 	if (WeaponHasAmmo())
 	{
-		if (bFireButtonPressed)
+		if (bFireButtonPressed && EquippedWeapon->GetAutomatic())
 		{
 			FireWeapon();
 		}

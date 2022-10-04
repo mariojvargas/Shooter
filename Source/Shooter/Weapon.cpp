@@ -17,7 +17,8 @@ AWeapon::AWeapon() :
     SlideDisplacementTime(0.2f),
     bMovingSlide(false),
     MaxSlideDisplacement(4.f),
-    MaxRecoilRotation(20.f)
+    MaxRecoilRotation(20.f),
+    bAutomatic(true)
 {
     PrimaryActorTick.bCanEverTick = true;
 }
@@ -103,6 +104,8 @@ void AWeapon::OnConstruction(const FTransform& Transform)
 
             BoneToHide = WeaponDataRow->BoneToHide;
             GetItemMesh()->HideBoneByName(BoneToHide, EPhysBodyOp::PBO_None);
+
+            bAutomatic = WeaponDataRow->bAutomatic;
         }
 
         if (GetMaterialInstance())
