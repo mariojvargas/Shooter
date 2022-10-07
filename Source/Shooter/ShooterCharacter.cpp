@@ -15,6 +15,8 @@
 #include "Weapon.h"
 #include "Components/CapsuleComponent.h"
 #include "Ammo.h"
+#include "PhysicalMaterials/PhysicalMaterial.h"
+#include "Shooter.h"
 
 // Sets default values
 AShooterCharacter::AShooterCharacter() : 
@@ -1284,4 +1286,24 @@ void AShooterCharacter::UnhighlightInventorySlot()
 {
     HighlightIconDelegate.Broadcast(HighlightedSlot, false);
     HighlightedSlot = -1;
+}
+
+EPhysicalSurface AShooterCharacter::GetSurfaceType() const
+{
+    const FVector Start{ GetActorLocation() };
+    const FVector End{ Start + FVector(0.f, 0.f, -400.f) };
+    
+    FCollisionQueryParams QueryParams;
+    QueryParams.bReturnPhysicalMaterial = true;
+
+    FHitResult HitResult;
+    GetWorld()->LineTraceSingleByChannel(
+        HitResult, 
+        Start, 
+        End, 
+        ECollisionChannel::ECC_Visibility, 
+        QueryParams
+    );
+
+    return UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
 }

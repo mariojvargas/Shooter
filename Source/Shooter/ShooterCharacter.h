@@ -176,6 +176,9 @@ protected:
 
     void HighlightInventorySlot();
 
+    UFUNCTION(BlueprintCallable)
+    EPhysicalSurface GetSurfaceType() const;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
