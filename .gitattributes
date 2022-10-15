@@ -6,3 +6,4 @@ Content/ParagonProps/Agora/Rocks/Textures/T_LargePlainsBoulder002_D.uasset filte
 Content/ParagonProps/Agora/Rocks/Textures/T_LargePlainsBoulder002_N.uasset filter=lfs diff=lfs merge=lfs -text
 Content/ParagonProps/Agora/Rocks/Textures/T_Agelsjon02_Cliff_N.uasset filter=lfs diff=lfs merge=lfs -text
 Content/ParagonTwinblast/Characters/Global/Eyes/Textures/EpicQuadPanorama_CC.uasset filter=lfs diff=lfs merge=lfs -text
+Content/ParagonGrux/Characters/Global/Eyes/Textures/EpicQuadPanorama_CC.uasset filter=lfs diff=lfs merge=lfs -text
