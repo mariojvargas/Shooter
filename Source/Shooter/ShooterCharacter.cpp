@@ -16,6 +16,7 @@
 #include "Components/CapsuleComponent.h"
 #include "Ammo.h"
 #include "PhysicalMaterials/PhysicalMaterial.h"
+#include "BulletHitInterface.h"
 #include "Shooter.h"
 
 // Sets default values
@@ -385,17 +386,29 @@ void AShooterCharacter::SendBullet()
             BarrelSocketTransform);
 	}
 
-	FVector BeamEndLocation;
-	if (GetBeamEndLocation(BarrelSocketTransform.GetLocation(), BeamEndLocation))
+    FHitResult BeamHitResult;
+	if (GetBeamEndLocation(BarrelSocketTransform.GetLocation(), BeamHitResult))
 	{
-		// Spawn impact particles after weapon beam end point is updated
-		if (ImpactParticles)
-		{
-			UGameplayStatics::SpawnEmitterAtLocation(
-				GetWorld(), 
-				ImpactParticles, 
-				BeamEndLocation);
-		}
+        // Does hit actor implement BulletHitInterface?
+        if (BeamHitResult.GetActor())
+        {
+            IBulletHitInterface* BulletHitInterface = Cast<IBulletHitInterface>(BeamHitResult.GetActor());
+            if (BulletHitInterface)
+            {
+                BulletHitInterface->BulletHit_Implementation(BeamHitResult);
+            }
+        }
+        else
+        {
+            // Spawn default impact particles 
+            if (ImpactParticles)
+            {
+                UGameplayStatics::SpawnEmitterAtLocation(
+                    GetWorld(), 
+                    ImpactParticles, 
+                    BeamHitResult.Location);
+            }
+        }
 	}
 
 	if (BeamParticles)
@@ -407,7 +420,7 @@ void AShooterCharacter::SendBullet()
 
 		if (Beam)
 		{
-			Beam->SetVectorParameter(FName("Target"), BeamEndLocation);
+			Beam->SetVectorParameter(FName("Target"), BeamHitResult.Location);
 		}
 	}
 }
@@ -512,8 +525,9 @@ void AShooterCharacter::ReloadWeapon()
 }
 
 
-bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FVector& OutBeamEndLocation)
+bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, FHitResult& OutHitResult)
 {
+    FVector OutBeamEndLocation;
 	FHitResult CrosshairHitResult;
 
 	if (TryGetTraceUnderCrosshairs(CrosshairHitResult, OutBeamEndLocation))
@@ -523,7 +537,6 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 
 	// Peform a second trace from gun barrel in case there are 
 	// objects between gun barrel and impact point
-	FHitResult WeaponTraceHit;
 	const FVector WeaponTraceStart{ MuzzleSocketLocation };
 	// Extend second line trace farther by 25%, 
 	// taking into account last beam end location and start of muzzle socket
@@ -531,16 +544,17 @@ bool AShooterCharacter::GetBeamEndLocation(const FVector& MuzzleSocketLocation, 
 	const FVector WeaponTraceEnd{ MuzzleSocketLocation + StartToEnd * 1.25f };	
 
 	GetWorld()->LineTraceSingleByChannel(
-		WeaponTraceHit, 
+		OutHitResult, 
 		WeaponTraceStart, 
 		WeaponTraceEnd, 
 		ECollisionChannel::ECC_Visibility);
-	if (WeaponTraceHit.bBlockingHit)
+	if (!OutHitResult.bBlockingHit)
 	{
-		OutBeamEndLocation = WeaponTraceHit.Location;
+		OutHitResult.Location = OutBeamEndLocation;
+        return false;
 	}
 
-	return WeaponTraceHit.bBlockingHit;
+	return true;
 }
 
 void AShooterCharacter::AimingButtonPressed()
