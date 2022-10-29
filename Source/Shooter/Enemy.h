@@ -28,6 +28,18 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     class USoundCue* ImpactSound{ nullptr };
 
+    /** Current health of this enemy */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    float Health;
+
+    /** Current health of this enemy */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    float MaxHealth;
+
+    /** Name of the head bone */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    FString HeadBone;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -37,4 +49,12 @@ public:
 
     // NOTE: because BulletHit is already decorated with UFUNCTION() we don't need to do it again here
     virtual void BulletHit_Implementation(FHitResult HitResult) override;
+
+    virtual float TakeDamage(
+        float DamageAmount, 
+        struct FDamageEvent const& DamageEvent, 
+        AController* EventInstigator, 
+        AActor* DamageCauser) override;
+
+    FORCEINLINE FString GetHeadBone() const { return HeadBone; }
 };
