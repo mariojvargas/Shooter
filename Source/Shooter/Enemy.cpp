@@ -65,6 +65,7 @@ float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEv
     if (Health - DamageAmount <= 0.f)
     {
         Health = 0;
+        Die();
     }
     else
     {
@@ -82,4 +83,9 @@ void AEnemy::ShowHealthBar_Implementation()
         this, 
         &AEnemy::HideHealthBar, 
         HealthBarDisplayTime);
+}
+
+void AEnemy::Die()
+{
+    HideHealthBar();
 }
