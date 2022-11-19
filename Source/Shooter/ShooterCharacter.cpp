@@ -403,7 +403,9 @@ void AShooterCharacter::SendBullet()
             if (HitEnemy)
             {
                 int32 DamageAmount{ 0 };
-                if (BeamHitResult.BoneName.ToString().Equals(HitEnemy->GetHeadBone()))
+
+                bool bIsHeadshot = BeamHitResult.BoneName.ToString().Equals(HitEnemy->GetHeadBone());
+                if (bIsHeadshot)
                 {
                     DamageAmount = EquippedWeapon->GetHeadshotDamage();
                 }
@@ -420,7 +422,7 @@ void AShooterCharacter::SendBullet()
                     UDamageType::StaticClass()
                 );
                 
-                HitEnemy->ShowHitNumber(DamageAmount, BeamHitResult.Location);
+                HitEnemy->ShowHitNumber(DamageAmount, BeamHitResult.Location, bIsHeadshot);
             }
         }
         else
