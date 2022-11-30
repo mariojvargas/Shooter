@@ -8,6 +8,8 @@
 #include "Blueprint/UserWidget.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Components/SphereComponent.h"
+#include "ShooterCharacter.h"
 #include "EnemyController.h"
 #include "DrawDebugHelpers.h"
 
@@ -19,17 +21,23 @@ AEnemy::AEnemy() :
     bCanHitReact(true),
     HitReactTimeMin(0.5f),
     HitReactTimeMax(3.f),
-    HitNumberDestroyTime(1.5f)
+    HitNumberDestroyTime(1.5f),
+    bStunned(false),
+    StunChance(0.5f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+    AgroSphere = CreateDefaultSubobject<USphereComponent>(TEXT("AgroSphere"));
+    AgroSphere->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+    AgroSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AgroSphereOverlap);
 	
     GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
@@ -46,7 +54,7 @@ void AEnemy::BeginPlay()
     {
         EnemyController->GetBlackboardComponent()->SetValueAsVector(TEXT("PatrolPoint"), WorldPatrolPoint);
         EnemyController->GetBlackboardComponent()->SetValueAsVector(TEXT("PatrolPoint2"), WorldPatrolPoint2);
-        
+
         EnemyController->RunBehaviorTree(BehaviorTree);
     }
 }
@@ -85,7 +93,14 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
     }
 
     ShowHealthBar();
-    PlayHitMontage(FName("HitReactFront"));
+
+    const float Stunned = FMath::FRandRange(0.f, 1.f);
+    if (Stunned <= StunChance)
+    {
+        // Stun the enemy
+        PlayHitMontage(FName("HitReactFront"));
+        bStunned = true;
+    }
 }
 
 float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
@@ -182,5 +197,25 @@ void AEnemy::UpdateHitNumbers()
             ScreenPosition);
 
         HitNumber->SetPositionInViewport(ScreenPosition);
+    }
+}
+
+void AEnemy::AgroSphereOverlap(
+		UPrimitiveComponent* OverlappedComponent, 
+		AActor* OtherActor, 
+		UPrimitiveComponent* OtherComponent, 
+		int32 OtherBodyIndex, 
+		bool bFromSweep,
+		const FHitResult& SweepResult)
+{
+    if (!OtherActor)
+    {
+        return;
+    }
+
+    auto Character = Cast<AShooterCharacter>(OtherActor);
+    if (Character)
+    {
+        EnemyController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Character);
     }
 }
