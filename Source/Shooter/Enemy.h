@@ -54,6 +54,9 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 
+    UFUNCTION(BlueprintCallable)
+    void SetStunned(bool Value);
+
 private:
     /** Particles to spawn when hit by bullets */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))

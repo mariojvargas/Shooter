@@ -99,7 +99,7 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
     {
         // Stun the enemy
         PlayHitMontage(FName("HitReactFront"));
-        bStunned = true;
+        SetStunned(true);
     }
 }
 
@@ -217,5 +217,15 @@ void AEnemy::AgroSphereOverlap(
     if (Character)
     {
         EnemyController->GetBlackboardComponent()->SetValueAsObject(TEXT("Target"), Character);
+    }
+}
+
+void AEnemy::SetStunned(bool Value)
+{
+    bStunned = Value;
+
+    if (EnemyController)
+    {
+        EnemyController->GetBlackboardComponent()->SetValueAsBool(TEXT("Stunned"), Value);
     }
 }
