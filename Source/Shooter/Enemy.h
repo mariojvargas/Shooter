@@ -73,6 +73,12 @@ protected:
 		UPrimitiveComponent* OtherComponent,
 		int32 OtherBodyIndex);
 
+    UFUNCTION(BlueprintCallable)
+    void PlayAttackMontage(FName SectionName, float PlayRate);
+
+    UFUNCTION(BlueprintPure)
+    FName GetAttackSectionName() const;
+
 private:
     /** Particles to spawn when hit by bullets */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -155,6 +161,15 @@ private:
     /** Sphere for attack range */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     USphereComponent* CombatRangeSphere{ nullptr };
+
+    /** Montage containing different attacks */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UAnimMontage* AttackMontage{ nullptr };
+
+    FName AttackLFast;
+    FName AttackRFast;
+    FName AttackL;
+    FName AttackR;
 
 public:	
 	// Called every frame

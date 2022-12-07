@@ -12,6 +12,7 @@
 #include "ShooterCharacter.h"
 #include "EnemyController.h"
 #include "DrawDebugHelpers.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AEnemy::AEnemy() :
@@ -23,7 +24,11 @@ AEnemy::AEnemy() :
     HitReactTimeMax(3.f),
     HitNumberDestroyTime(1.5f),
     bStunned(false),
-    StunChance(0.5f)
+    StunChance(0.5f),
+    AttackLFast(TEXT("AttackLFast")),
+    AttackRFast(TEXT("AttackRFast")),
+    AttackL(TEXT("AttackL")),
+    AttackR(TEXT("AttackR"))
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -46,6 +51,10 @@ void AEnemy::BeginPlay()
     CombatRangeSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnCombatRangeEndOverlap);
 	
     GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
+
+    // Ignore camera for mesh and capsule
+    GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
+    GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
     const FVector WorldPatrolPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint);
     DrawDebugSphere(GetWorld(), WorldPatrolPoint, 25.f, 12, FColor::Red, true);
@@ -282,5 +291,36 @@ void AEnemy::OnCombatRangeEndOverlap(
         {
             EnemyController->GetBlackboardComponent()->SetValueAsBool(TEXT("InAttackRange"), bInAttackRange);
         }
+    }
+}
+
+void AEnemy::PlayAttackMontage(FName SectionName, float PlayRate)
+{
+    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    if (AnimInstance && AttackMontage)
+    {
+        AnimInstance->Montage_Play(AttackMontage, PlayRate);
+        AnimInstance->Montage_JumpToSection(SectionName, AttackMontage);
+    }
+}
+
+FName AEnemy::GetAttackSectionName() const
+{
+    const int32 SectionNumber{ FMath::RandRange(1, 4) };
+
+    // TODO: this should be an array
+    switch (SectionNumber)
+    {
+        case 1:
+            return AttackLFast;
+
+        case 2:
+            return AttackRFast;
+
+        case 3:
+            return AttackL;
+
+        default:
+            return AttackR;
     }
 }
