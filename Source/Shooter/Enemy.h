@@ -97,6 +97,18 @@ protected:
 		bool bFromSweep,
 		const FHitResult& SweepResult);
 
+    UFUNCTION(BlueprintCallable)
+    void ActivateLeftWeapon();
+
+    UFUNCTION(BlueprintCallable)
+    void DeactivateLeftWeapon();
+    
+    UFUNCTION(BlueprintCallable)
+    void ActivateRightWeapon();
+    
+    UFUNCTION(BlueprintCallable)
+    void DeactivateRightWeapon();
+
 private:
     /** Particles to spawn when hit by bullets */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
