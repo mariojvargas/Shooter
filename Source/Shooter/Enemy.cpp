@@ -13,6 +13,7 @@
 #include "EnemyController.h"
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/BoxComponent.h"
 
 // Sets default values
 AEnemy::AEnemy() :
@@ -38,6 +39,12 @@ AEnemy::AEnemy() :
 
     CombatRangeSphere = CreateDefaultSubobject<USphereComponent>(TEXT("CombatSphere"));
     CombatRangeSphere->SetupAttachment(GetRootComponent());
+
+    LeftWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("LeftWeaponBox"));
+    LeftWeaponCollision->SetupAttachment(GetMesh(), FName("LeftWeaponSocket"));
+
+    RightWeaponCollision = CreateDefaultSubobject<UBoxComponent>(TEXT("RightWeaponBox"));
+    RightWeaponCollision->SetupAttachment(GetMesh(), FName("RightWeaponSocket"));
 }
 
 // Called when the game starts or when spawned
@@ -49,7 +56,19 @@ void AEnemy::BeginPlay()
 
     CombatRangeSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::CombatRangeOverlap);
     CombatRangeSphere->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnCombatRangeEndOverlap);
-	
+
+    LeftWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnLeftWeaponOverlap);
+    LeftWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    LeftWeaponCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+    LeftWeaponCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    LeftWeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
+    RightWeaponCollision->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnRightWeaponOverlap);
+    RightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+    RightWeaponCollision->SetCollisionObjectType(ECollisionChannel::ECC_WorldDynamic);
+    RightWeaponCollision->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
+    RightWeaponCollision->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+
     GetMesh()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Visibility, ECollisionResponse::ECR_Block);
 
     // Ignore camera for mesh and capsule
@@ -323,4 +342,26 @@ FName AEnemy::GetAttackSectionName() const
         default:
             return AttackR;
     }
+}
+
+void AEnemy::OnLeftWeaponOverlap(
+        UPrimitiveComponent* OverlappedComponent, 
+		AActor* OtherActor, 
+		UPrimitiveComponent* OtherComponent, 
+		int32 OtherBodyIndex, 
+		bool bFromSweep,
+		const FHitResult& SweepResult)
+{
+    
+}
+
+void AEnemy::OnRightWeaponOverlap(
+    UPrimitiveComponent* OverlappedComponent, 
+    AActor* OtherActor, 
+    UPrimitiveComponent* OtherComponent, 
+    int32 OtherBodyIndex, 
+    bool bFromSweep,
+    const FHitResult& SweepResult)
+{
+    
 }
