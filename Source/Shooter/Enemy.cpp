@@ -14,6 +14,7 @@
 #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
+#include "GameFramework/DamageType.h"
 
 // Sets default values
 AEnemy::AEnemy() :
@@ -29,7 +30,8 @@ AEnemy::AEnemy() :
     AttackLFast(TEXT("AttackLFast")),
     AttackRFast(TEXT("AttackRFast")),
     AttackL(TEXT("AttackL")),
-    AttackR(TEXT("AttackR"))
+    AttackR(TEXT("AttackR")),
+    BaseDamage(20.f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -352,7 +354,7 @@ void AEnemy::OnLeftWeaponOverlap(
 		bool bFromSweep,
 		const FHitResult& SweepResult)
 {
-    
+    DoDamage(OtherActor);
 }
 
 void AEnemy::OnRightWeaponOverlap(
@@ -363,7 +365,7 @@ void AEnemy::OnRightWeaponOverlap(
     bool bFromSweep,
     const FHitResult& SweepResult)
 {
-    
+    DoDamage(OtherActor);
 }
 
 void AEnemy::ActivateLeftWeapon()
@@ -384,4 +386,18 @@ void AEnemy::ActivateRightWeapon()
 void AEnemy::DeactivateRightWeapon()
 {
     RightWeaponCollision->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+
+void AEnemy::DoDamage(AActor *Victim)
+{
+    if (Victim == nullptr)
+    {
+        return;
+    }
+
+    auto Character = Cast<AShooterCharacter>(Victim);
+    if (Character)
+    {
+        UGameplayStatics::ApplyDamage(Character, BaseDamage, EnemyController, this, UDamageType::StaticClass());
+    }
 }

@@ -47,6 +47,13 @@ public:
 	// Sets default values for this character's properties
 	AShooterCharacter();
 
+    // Take combat damage
+    virtual float TakeDamage(
+        float DamageAmount, 
+        struct FDamageEvent const& DamageEvent,
+        class AController* EventInstigator,
+        AActor* DamageCauser) override;
+
 private:
 	const float DEFAULT_BASE_TURN_RATE = 45.f;
 	const float DEFAULT_BASE_LOOK_UP_RATE = 45.f;
@@ -436,6 +443,15 @@ private:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
     int32 HighlightedSlot;
+
+
+    /** Character health */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+    float Health;
+
+    /** Character maximum health */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
+    float MaxHealth;
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
