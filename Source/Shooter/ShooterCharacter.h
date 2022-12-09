@@ -453,6 +453,10 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
     float MaxHealth;
 
+    /** Sound made when character gets hit by a melee attack */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    class USoundCue* MeleeImpactSound{ nullptr };
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
 	{ 
@@ -505,6 +509,8 @@ public:
     FORCEINLINE bool ShouldPlayPickupSound() const { return bShouldPlayPickupSound; }
 
     FORCEINLINE bool ShouldPlayEquipSound() const { return bShouldPlayEquipSound; }
+
+    FORCEINLINE USoundCue* GetMeleeImpactSound() const { return MeleeImpactSound; }
 
     void StartPickupSoundTimer();
     void StartEquipSoundTimer();
