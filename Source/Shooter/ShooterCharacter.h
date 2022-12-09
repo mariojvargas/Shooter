@@ -444,7 +444,6 @@ private:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Inventory, meta = (AllowPrivateAccess = "true"))
     int32 HighlightedSlot;
 
-
     /** Character health */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Items, meta = (AllowPrivateAccess = "true"))
     float Health;
@@ -456,6 +455,10 @@ private:
     /** Sound made when character gets hit by a melee attack */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     class USoundCue* MeleeImpactSound{ nullptr };
+
+    /** Blood splatter particles for melee hit */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UParticleSystem* BloodParticles{ nullptr };
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
@@ -511,6 +514,8 @@ public:
     FORCEINLINE bool ShouldPlayEquipSound() const { return bShouldPlayEquipSound; }
 
     FORCEINLINE USoundCue* GetMeleeImpactSound() const { return MeleeImpactSound; }
+
+    FORCEINLINE UParticleSystem* GetBloodParticles() const { return BloodParticles; }
 
     void StartPickupSoundTimer();
     void StartEquipSoundTimer();
