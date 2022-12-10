@@ -147,6 +147,12 @@ void AEnemy::BulletHit_Implementation(FHitResult HitResult)
 
 float AEnemy::TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
+    // Set Target Blackboard key to agro player Character
+    if (EnemyController)
+    {
+        EnemyController->GetBlackboardComponent()->SetValueAsObject(FName("Target"), DamageCauser);
+    }
+
     if (Health - DamageAmount <= 0.f)
     {
         Health = 0;
