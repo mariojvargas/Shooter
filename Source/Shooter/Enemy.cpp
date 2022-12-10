@@ -19,8 +19,8 @@
 
 // Sets default values
 AEnemy::AEnemy() :
-    Health(100.f),
     MaxHealth(100.f),
+    Health(MaxHealth),
     HealthBarDisplayTime(4.f),
     bCanHitReact(true),
     HitReactTimeMin(0.5f),
@@ -60,6 +60,11 @@ AEnemy::AEnemy() :
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+
+    // Note: Instructor suggested making Health EditAnywhere 
+    // but I opted to control that via MaxHealth so that 
+    // enemies start at full health
+    Health = MaxHealth;
 
     AgroSphere->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::AgroSphereOverlap);
 

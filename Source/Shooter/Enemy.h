@@ -131,13 +131,13 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     class USoundCue* ImpactSound{ nullptr };
 
+    /** Maximum health of this enemy */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    float MaxHealth;
+
     /** Current health of this enemy */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
     float Health;
-
-    /** Current health of this enemy */
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
-    float MaxHealth;
 
     /** Name of the head bone */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
