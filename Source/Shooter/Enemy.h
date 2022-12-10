@@ -113,6 +113,8 @@ protected:
 
     void SpawnBlood(AShooterCharacter* Victim, FName SocketName);
 
+    bool TryStunCharacter(AShooterCharacter* Victim);
+
 private:
     /** Particles to spawn when hit by bullets */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))

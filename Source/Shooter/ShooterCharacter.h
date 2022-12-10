@@ -12,10 +12,11 @@ class AWeapon;
 UENUM(BlueprintType)
 enum class ECombatState : uint8
 {
-	ECS_Ready	 UMETA(DisplayName = "Ready"),
+	ECS_Ready UMETA(DisplayName = "Ready"),
 	ECS_FiringInProgress UMETA(DisplayName = "FiringInProgress"),
 	ECS_Reloading UMETA(DisplayName = "Reloading"),
     ECS_Equipping UMETA(DisplayName = "Equipping"),
+    ECS_Stunned UMETA(DisplayName = "Stunned"),
 
 	ECS_MAX UMETA(DisplayName = "DefaultMAX")
 };
@@ -185,6 +186,9 @@ protected:
 
     UFUNCTION(BlueprintCallable)
     EPhysicalSurface GetSurfaceType() const;
+    
+    UFUNCTION(BlueprintCallable)
+    void EndStun();
 
 public:	
 	// Called every frame
@@ -460,6 +464,14 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     UParticleSystem* BloodParticles{ nullptr };
 
+    /** Anim montage to play when character is stunned */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UAnimMontage* HitReactMontage{ nullptr };
+
+    /** Chance of being stunned when this character is hit by an enemy */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    float StunChance;
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
 	{ 
@@ -519,4 +531,8 @@ public:
 
     void StartPickupSoundTimer();
     void StartEquipSoundTimer();
+
+    void Stun();
+
+    FORCEINLINE float GetStunChance() const { return StunChance; }
 };

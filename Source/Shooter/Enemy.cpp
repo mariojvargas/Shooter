@@ -362,6 +362,7 @@ void AEnemy::OnLeftWeaponOverlap(
     {
         DoDamage(Character);
         SpawnBlood(Character, LeftWeaponSocket);
+        TryStunCharacter(Character);
     }
 }
 
@@ -378,6 +379,7 @@ void AEnemy::OnRightWeaponOverlap(
     {
         DoDamage(Character);
         SpawnBlood(Character, RightWeaponSocket);
+        TryStunCharacter(Character);
     }
 }
 
@@ -434,4 +436,20 @@ void AEnemy::SpawnBlood(AShooterCharacter* Character, FName SocketName)
                 SocketTransform);
         }
     }
+}
+
+bool AEnemy::TryStunCharacter(AShooterCharacter *Victim)
+{
+    if (Victim)
+    {
+        const float Stun{ FMath::FRandRange(0.f, 1.f) };
+        if (Stun <= Victim->GetStunChance())
+        {
+            Victim->Stun();
+
+            return true;
+        }
+    }
+
+    return false;
 }

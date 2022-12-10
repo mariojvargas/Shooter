@@ -90,7 +90,9 @@ AShooterCharacter::AShooterCharacter() :
     HighlightedSlot(-1),
 
     Health(100.f),
-    MaxHealth(100.f)
+    MaxHealth(100.f),
+
+    StunChance(0.25f)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -499,6 +501,11 @@ void AShooterCharacter::StartFireTimer()
 
 void AShooterCharacter::ResetAutoFire()
 {
+    if (CombatState == ECombatState::ECS_Stunned)
+    {
+        return;
+    }
+
 	CombatState = ECombatState::ECS_Ready;
 
     if (!EquippedWeapon)
@@ -606,7 +613,9 @@ void AShooterCharacter::AimingButtonPressed()
 {
 	bAimingButtonPressed = true;
 
-	if (CombatState != ECombatState::ECS_Reloading && CombatState != ECombatState::ECS_Equipping)
+	if (CombatState != ECombatState::ECS_Reloading 
+            && CombatState != ECombatState::ECS_Equipping 
+            && CombatState != ECombatState::ECS_Stunned)
 	{
 		Aim();
 	}
@@ -1000,6 +1009,11 @@ bool AShooterCharacter::WeaponHasAmmo() const
 
 void AShooterCharacter::FinishReloading()
 {
+    if (CombatState == ECombatState::ECS_Stunned)
+    {
+        return;
+    }
+
 	CombatState = ECombatState::ECS_Ready;
 
 	if (bAimingButtonPressed)
@@ -1213,6 +1227,17 @@ void AShooterCharacter::StartEquipSoundTimer()
     );
 }
 
+void AShooterCharacter::Stun()
+{
+    CombatState = ECombatState::ECS_Stunned;
+
+    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    if (AnimInstance && HitReactMontage)
+    {
+        AnimInstance->Montage_Play(HitReactMontage);
+    }
+}
+
 void AShooterCharacter::FKeyPressed()
 {
     if (EquippedWeapon->GetSlotIndex() == 0)
@@ -1308,6 +1333,11 @@ void AShooterCharacter::ExchangeInventoryItems(int32 CurrentItemIndex, int32 New
 
 void AShooterCharacter::FinishEquipping()
 {
+    if (CombatState == ECombatState::ECS_Stunned)
+    {
+        return;
+    }
+
     CombatState = ECombatState::ECS_Ready;
 
     if (bAimingButtonPressed)
@@ -1365,4 +1395,15 @@ EPhysicalSurface AShooterCharacter::GetSurfaceType() const
     );
 
     return UPhysicalMaterial::DetermineSurfaceType(HitResult.PhysMaterial.Get());
+}
+
+
+void AShooterCharacter::EndStun()
+{
+    CombatState = ECombatState::ECS_Ready;
+
+    if (bAimingButtonPressed)
+    {
+        Aim();
+    }
 }
