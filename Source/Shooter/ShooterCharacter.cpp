@@ -147,21 +147,6 @@ AShooterCharacter::AShooterCharacter() :
     InterpComp6->SetupAttachment(GetFollowCamera());
 }
 
-float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const &DamageEvent, AController *EventInstigator, AActor *DamageCauser)
-{
-    if (Health - DamageAmount <= 0.f)
-    {
-        Health = 0.f;
-    }
-    else
-    {
-        Health -= DamageAmount;
-    }
-
-    return DamageAmount;
-}
-
-
 // Called when the game starts or when spawned
 void AShooterCharacter::BeginPlay()
 {
@@ -1229,6 +1214,11 @@ void AShooterCharacter::StartEquipSoundTimer()
 
 void AShooterCharacter::Stun()
 {
+    if (Health <= 0.f)
+    {
+        return;
+    }
+
     CombatState = ECombatState::ECS_Stunned;
 
     UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
@@ -1405,5 +1395,40 @@ void AShooterCharacter::EndStun()
     if (bAimingButtonPressed)
     {
         Aim();
+    }
+}
+
+float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const &DamageEvent, AController *EventInstigator, AActor *DamageCauser)
+{
+    if (Health - DamageAmount <= 0.f)
+    {
+        Health = 0.f;
+        Die();
+    }
+    else
+    {
+        Health -= DamageAmount;
+    }
+
+    return DamageAmount;
+}
+
+void AShooterCharacter::Die()
+{
+    UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+    if (AnimInstance && DeathMontage)
+    {
+        AnimInstance->Montage_Play(DeathMontage);
+    }
+}
+
+void AShooterCharacter::FinishDeath()
+{
+    GetMesh()->bPauseAnims = true;
+
+    APlayerController* PlayerController = UGameplayStatics::GetPlayerController(this, 0);
+    if (PlayerController)
+    {
+        DisableInput(PlayerController);
     }
 }

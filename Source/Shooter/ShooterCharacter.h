@@ -190,6 +190,11 @@ protected:
     UFUNCTION(BlueprintCallable)
     void EndStun();
 
+    void Die();
+
+    UFUNCTION(BlueprintCallable)
+    void FinishDeath();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -471,6 +476,10 @@ private:
     /** Chance of being stunned when this character is hit by an enemy */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     float StunChance;
+
+    /** Anim montage for character death */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UAnimMontage* DeathMontage{ nullptr };
 
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
