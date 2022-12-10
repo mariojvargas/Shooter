@@ -115,6 +115,8 @@ protected:
 
     bool TryStunCharacter(AShooterCharacter* Victim);
 
+    void ResetCanAttack();
+
 private:
     /** Particles to spawn when hit by bullets */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -224,6 +226,16 @@ private:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     FName RightWeaponSocket;
+
+    /** true when enemy can attack player */
+    UPROPERTY(VisibleAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    bool bCanAttack;
+
+    FTimerHandle AttackWaitTimer;
+
+    /** Minimum wait time between attacks */
+    UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    float AttackWaitTime;
 
 public:	
 	// Called every frame
