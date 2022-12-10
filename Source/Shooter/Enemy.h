@@ -117,6 +117,9 @@ protected:
 
     void ResetCanAttack();
 
+    UFUNCTION(BlueprintCallable)
+    void FinishDeath();
+
 private:
     /** Particles to spawn when hit by bullets */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
@@ -240,6 +243,8 @@ private:
     /** Death anim montage for this enemy */
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     UAnimMontage* DeathMontage{ nullptr };
+
+    bool bDying;
 
 public:	
 	// Called every frame
