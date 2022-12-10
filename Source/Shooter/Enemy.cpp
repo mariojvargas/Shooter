@@ -11,7 +11,7 @@
 #include "Components/SphereComponent.h"
 #include "ShooterCharacter.h"
 #include "EnemyController.h"
-#include "DrawDebugHelpers.h"
+// #include "DrawDebugHelpers.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameFramework/DamageType.h"
@@ -85,10 +85,10 @@ void AEnemy::BeginPlay()
     GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 
     const FVector WorldPatrolPoint = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint);
-    DrawDebugSphere(GetWorld(), WorldPatrolPoint, 25.f, 12, FColor::Red, true);
+    // DrawDebugSphere(GetWorld(), WorldPatrolPoint, 25.f, 12, FColor::Red, true);
 
     const FVector WorldPatrolPoint2 = UKismetMathLibrary::TransformLocation(GetActorTransform(), PatrolPoint2);
-    DrawDebugSphere(GetWorld(), WorldPatrolPoint2, 25.f, 12, FColor::Cyan, true);
+    // DrawDebugSphere(GetWorld(), WorldPatrolPoint2, 25.f, 12, FColor::Cyan, true);
 
     // Get the AI controller
     EnemyController = Cast<AEnemyController>(GetController());
