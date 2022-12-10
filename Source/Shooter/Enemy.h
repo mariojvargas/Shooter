@@ -237,6 +237,10 @@ private:
     UPROPERTY(EditAnywhere, Category = Combat, meta = (AllowPrivateAccess = "true"))
     float AttackWaitTime;
 
+    /** Death anim montage for this enemy */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    UAnimMontage* DeathMontage{ nullptr };
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
