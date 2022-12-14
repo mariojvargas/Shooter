@@ -262,7 +262,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
     // NOTE: because BulletHit is already decorated with UFUNCTION() we don't need to do it again here
-    virtual void BulletHit_Implementation(FHitResult HitResult) override;
+    virtual void BulletHit_Implementation(FHitResult HitResult, AActor* Shooter, AController* ShooterController) override;
 
     virtual float TakeDamage(
         float DamageAmount, 
