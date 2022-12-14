@@ -28,6 +28,14 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     class USoundCue* ImpactSound{ nullptr };
 
+    /** Mesh for the explosive */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    class UStaticMeshComponent* ExplosiveMesh{ nullptr };
+
+    /** Used to determine what actors overlap during explosion */
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    class USphereComponent* OverlapSphere{ nullptr };
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
