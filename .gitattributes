@@ -11,3 +11,4 @@ Content/KiteDemo/Environments/Cliffs/Cliff01/T_Cliff01_D_CC_R.uasset filter=lfs 
 Content/KiteDemo/Environments/Cliffs/Cliff01/T_Cliff01_N.uasset filter=lfs diff=lfs merge=lfs -text
 Content/KiteDemo/Environments/Cliffs/Cliff01/MI_Cliff01.uasset filter=lfs diff=lfs merge=lfs -text
 Content/KiteDemo/Environments/Cliffs/Cliff01/SM_Cliff01.uasset filter=lfs diff=lfs merge=lfs -text
+Content/KiteDemo/Environments/GroundTiles/PebblyRiverbank/T_Tile_PebblyRiverbank_N.uasset filter=lfs diff=lfs merge=lfs -text
