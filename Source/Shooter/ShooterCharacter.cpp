@@ -94,7 +94,9 @@ AShooterCharacter::AShooterCharacter() :
     Health(100.f),
     MaxHealth(100.f),
 
-    StunChance(0.25f)
+    StunChance(0.25f),
+
+    bDead(false)
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -1423,6 +1425,8 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const &Dama
 
 void AShooterCharacter::Die()
 {
+    bDead = true;
+    
     UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
     if (AnimInstance && DeathMontage)
     {

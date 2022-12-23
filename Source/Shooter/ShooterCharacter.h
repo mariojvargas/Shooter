@@ -481,6 +481,10 @@ private:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Combat, meta = (AllowPrivateAccess = "true"))
     UAnimMontage* DeathMontage{ nullptr };
 
+    /** Indicates whether the character is dead (true); false when alive */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+    bool bDead;
+
 public:
 	FORCEINLINE USpringArmComponent* GetCameraBoom() const 
 	{ 
