@@ -1426,7 +1426,7 @@ float AShooterCharacter::TakeDamage(float DamageAmount, FDamageEvent const &Dama
 void AShooterCharacter::Die()
 {
     bDead = true;
-    
+
     UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
     if (AnimInstance && DeathMontage)
     {
