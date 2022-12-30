@@ -24,3 +24,5 @@ Content/KiteDemo/Environments/Rocks/Mountain_RockFace_002/T_MountainRock_Closed_
 Content/KiteDemo/Environments/Rocks/Mountain_RockFace_002/T_MountainRock_Closed_N.uasset filter=lfs diff=lfs merge=lfs -text
 Content/KiteDemo/Environments/Rocks/Mountain_RockFace_002/T_MountainRock_D.uasset filter=lfs diff=lfs merge=lfs -text
 Content/KiteDemo/Environments/Rocks/Mountain_RockFace_002/T_MountainRock_Closed_D.uasset filter=lfs diff=lfs merge=lfs -text
+Content/KiteDemo/Environments/Rocks/Scree001/T_Scree_001_D_CC.uasset filter=lfs diff=lfs merge=lfs -text
+Content/KiteDemo/Environments/Rocks/Scree001/T_Scree_001_N.uasset filter=lfs diff=lfs merge=lfs -text
