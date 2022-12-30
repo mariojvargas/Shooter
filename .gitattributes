@@ -14,3 +14,4 @@ Content/KiteDemo/Environments/Cliffs/Cliff01/SM_Cliff01.uasset filter=lfs diff=l
 Content/KiteDemo/Environments/GroundTiles/PebblyRiverbank/T_Tile_PebblyRiverbank_N.uasset filter=lfs diff=lfs merge=lfs -text
 Content/KiteDemo/Environments/GroundTiles/RockyPath/T_GDC_StonePath_Tile_D_R.uasset filter=lfs diff=lfs merge=lfs -text
 Content/KiteDemo/Environments/GroundTiles/RockyPath/T_GDC_StonePath_Tile_N.uasset filter=lfs diff=lfs merge=lfs -text
+Content/KiteDemo/Environments/Trees/Tree_Stump_01/T_Tree_Stump_01_D_R.uasset filter=lfs diff=lfs merge=lfs -text
